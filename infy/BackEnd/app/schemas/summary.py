@@ -1,5 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field
+from app.schemas.analysis import Finding
 
 
 class PrioritizedFix(BaseModel):
@@ -16,6 +17,13 @@ class SeverityBreakdown(BaseModel):
     medium: int = 0
     low: int = 0
     total: int = 0
+
+
+class PRSummaryRequest(BaseModel):
+    analysis_id: Optional[str] = "direct"
+    language: Optional[str] = "python"
+    code: Optional[str] = ""
+    findings: Optional[List[Finding]] = None
 
 
 class PRSummaryResponse(BaseModel):
