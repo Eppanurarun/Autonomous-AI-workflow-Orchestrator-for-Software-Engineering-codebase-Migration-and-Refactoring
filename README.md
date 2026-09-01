@@ -4,22 +4,21 @@ An AI-powered multi-agent platform for automated code review, security vulnerabi
 
 ---
 
-## 🚀 Project Status: Milestone 2 Completed
+## 🚀 Project Status: Milestone 3 Completed
 
-### Features Delivered in Milestone 1 & 2:
-* **Code Submission Module**: Support for pasting code snippets directly or uploading source files for both Python and Java.
-* **Syntax Validation**: Backend validation checks utilizing Python `ast` parsing and Java `javalang` parsing (supporting full class files and raw method snippets).
-* **Code Analysis Agent**: Analyzes code quality metrics, docstring coverage, function parameters, and cognitive complexity.
-* **Security Vulnerability Agent**: Scans for OWASP Top 10 risks including SQL Injection, shell command execution, secrets leakage, and DOM-based Cross-Site Scripting (XSS).
-* **Developer Portal Dashboard**: Interactive dashboard showcasing code quality health scores, issue breakdowns, recent analyses, and navigation routes.
-* **Orchestration & Validation**: Assembles security and quality reports, alongside a comprehensive python verification test suite ([`test_milestone2.py`](file:///e:/Downloads/Smart%20code%20analysis/Geetha123-hue-Repo_Sample-dabb06d/infy/BackEnd/test_milestone2.py)).
-* **RAG Secure Coding Knowledge Base**: In-memory retrieval system indexing secure coding standards, OWASP guidelines, and prevention recommendations using TF-IDF and Cosine Similarity vector indexing.
+### Features Delivered across Milestones 1, 2 & 3:
+* **Code Submission Module**: Direct code paste and file upload for Python and Java with syntax validation.
+* **Multi-Agent Orchestrator**: Concurrently executes the **Code Analysis Agent** and **Security Vulnerability Agent** to identify code smells, complexity issues, and OWASP Top 10 vulnerabilities.
+* **Remediation Agent**: Generates finding-specific security and code quality remediations, providing before/after corrected code snippets, explanations, and refactoring suggestions. Powered by Gemini LLM with instant deterministic RAG fallbacks.
+* **Findings Display & Dashboard**: Modern portal featuring severity scoring, categorization filters (Quality vs. Security), progress animations, and historical inspection tracking.
+* **Persistent SQLite Storage**: Local database storing full analysis results, findings history, and generated remediation records with full CRUD lifecycle.
+* **RAG Secure Coding Knowledge Base**: In-memory retrieval engine grounding recommendations in OWASP guidelines using TF-IDF and Cosine Similarity vector indexing.
 
 ---
 
 ## 🛠️ Tech Stack
 * **Frontend**: React (Vite), Tailwind CSS, Lucide React (Icons), PrismJS, React Simple Code Editor
-* **Backend**: FastAPI (Python), Uvicorn (ASGI Web Server), Scikit-Learn (TF-IDF Vectorization), Numpy
+* **Backend**: FastAPI (Python), Uvicorn (ASGI Web Server), Scikit-Learn (TF-IDF Vectorization), SQLite, Google GenAI SDK, Numpy
 
 ---
 
@@ -49,7 +48,7 @@ An AI-powered multi-agent platform for automated code review, security vulnerabi
 
 3. Install backend dependencies:
    ```bash
-   pip install fastapi uvicorn pydantic scikit-learn numpy javalang
+   pip install fastapi uvicorn pydantic scikit-learn numpy javalang google-genai python-dotenv
    ```
 
 4. Run the backend server:
