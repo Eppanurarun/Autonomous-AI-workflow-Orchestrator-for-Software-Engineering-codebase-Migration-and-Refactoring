@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { generateRemediation } from "../services/api";
+import { generateRemediation, getPRSummary } from "../services/api";
+import ConversationalAssistant from "./ConversationalAssistant";
 
 import {
   AlertTriangle,
@@ -12,6 +13,12 @@ import {
   ShieldCheck,
   Code2,
   Sparkles,
+  FileText,
+  Copy,
+  Check,
+  Bot,
+  Activity,
+  ListOrdered,
 } from "lucide-react";
 
 export default function ResultCard({ result, error }) {
@@ -19,6 +26,13 @@ export default function ResultCard({ result, error }) {
   const [remediationLoading, setRemediationLoading] = useState(false);
   const [remediationResult, setRemediationResult] = useState(null);
   const [remediationError, setRemediationError] = useState("");
+
+  const [prSummaryLoading, setPrSummaryLoading] = useState(false);
+  const [prSummaryResult, setPrSummaryResult] = useState(null);
+  const [prSummaryError, setPrSummaryError] = useState("");
+  const [prSummaryCopied, setPrSummaryCopied] = useState(false);
+
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
 
   
 
@@ -74,6 +88,34 @@ export default function ResultCard({ result, error }) {
       }
     };
 
+    const handleGeneratePRSummary = async () => {
+      if (!analysisId || analysisId === "—") {
+        setPrSummaryError("Analysis ID is not available.");
+        return;
+      }
+
+      setPrSummaryLoading(true);
+      setPrSummaryError("");
+
+      try {
+        const data = await getPRSummary(analysisId);
+        setPrSummaryResult(data);
+      } catch (err) {
+        setPrSummaryError(
+          err.message || "Unable to compile PR summary."
+        );
+      } finally {
+        setPrSummaryLoading(false);
+      }
+    };
+
+    const handleCopyPRMarkdown = () => {
+      if (!prSummaryResult?.markdown_pr_comment) return;
+      navigator.clipboard.writeText(prSummaryResult.markdown_pr_comment);
+      setPrSummaryCopied(true);
+      setTimeout(() => setPrSummaryCopied(false), 2500);
+    };
+
   const language = result.language || "—";
 
   const isSyntaxValid =
@@ -95,23 +137,35 @@ export default function ResultCard({ result, error }) {
   const findings = result.findings || [];
 
   // --------------------------------------------------
-  // Severity counts
+  // Severity counts & Health Score
   // --------------------------------------------------
 
-  const highCount = findings.filter(
+  const actionableFindings = findings.filter(
+    (item) => item.title !== "Software Architecture Metrics"
+  );
+
+  const highCount = actionableFindings.filter(
     (item) =>
       String(item.severity).toLowerCase() === "high"
   ).length;
 
-  const mediumCount = findings.filter(
+  const mediumCount = actionableFindings.filter(
     (item) =>
       String(item.severity).toLowerCase() === "medium"
   ).length;
 
-  const lowCount = findings.filter(
+  const lowCount = actionableFindings.filter(
     (item) =>
       String(item.severity).toLowerCase() === "low"
   ).length;
+
+  const healthScore = Math.max(
+    0,
+    Math.min(
+      100,
+      100 - highCount * 15 - mediumCount * 8 - lowCount * 3
+    )
+  );
 
   // --------------------------------------------------
   // Finding classification
@@ -208,10 +262,10 @@ export default function ResultCard({ result, error }) {
 
 
         {/* ==========================================
-            FINDINGS SUMMARY
+            FINDINGS SUMMARY & HEALTH SCORE
         =========================================== */}
 
-        <div className="grid gap-3 sm:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-5">
 
           <SummaryCard
             label="Total Findings"
@@ -235,6 +289,13 @@ export default function ResultCard({ result, error }) {
             label="Low"
             value={lowCount}
             tone="cyan"
+          />
+
+          <SummaryCard
+            label="Health Score"
+            value={`${healthScore}/100`}
+            tone={healthScore >= 80 ? "emerald" : healthScore >= 50 ? "amber" : "rose"}
+            icon={Activity}
           />
 
         </div>
@@ -365,18 +426,36 @@ export default function ResultCard({ result, error }) {
 
             </div>
 
-            <button
-  type="button"
-  onClick={handleGenerateRemediation}
-  disabled={remediationLoading}
-  className="inline-flex items-center gap-2 rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
->
-  <Sparkles size={14} />
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={handleGeneratePRSummary}
+                disabled={prSummaryLoading}
+                className="inline-flex items-center gap-2 rounded-lg border border-indigo-400/30 bg-indigo-500/10 px-3 py-2 text-xs font-semibold text-indigo-200 transition hover:bg-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <FileText size={14} />
+                {prSummaryLoading ? "Compiling PR Summary..." : "Compile PR Summary"}
+              </button>
 
-  {remediationLoading
-    ? "Generating Remediation..."
-    : "Generate AI Remediation"}
-</button>
+              <button
+                type="button"
+                onClick={handleGenerateRemediation}
+                disabled={remediationLoading}
+                className="inline-flex items-center gap-2 rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Sparkles size={14} />
+                {remediationLoading ? "Generating Remediation..." : "Generate AI Remediation"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsAssistantOpen(true)}
+                className="inline-flex items-center gap-2 rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-200 transition hover:bg-emerald-500/20"
+              >
+                <Bot size={14} />
+                Ask Code Assistant
+              </button>
+            </div>
 
             <span className="font-mono text-xs text-slate-500">
               {filteredFindings.length} shown
@@ -892,6 +971,135 @@ export default function ResultCard({ result, error }) {
 
 
       {/* ==============================================
+          PR REVIEW SUMMARY (AGENT RESULT)
+      =============================================== */}
+      {prSummaryLoading && (
+        <div className="rounded-2xl border border-indigo-400/20 bg-indigo-500/5 p-5">
+          <div className="flex items-center gap-3">
+            <span className="h-5 w-5 animate-spin rounded-full border-2 border-indigo-300/30 border-t-indigo-300" />
+            <div>
+              <h3 className="text-sm font-bold text-indigo-200">
+                Compiling PR Review Summary
+              </h3>
+              <p className="mt-1 text-xs text-slate-400">
+                The PR Summary Agent is assembling the executive overview, severity breakdown, and prioritized fix roadmap.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {prSummaryError && !prSummaryLoading && (
+        <div className="rounded-2xl border border-rose-400/20 bg-rose-400/5 p-5">
+          <div className="flex items-start gap-3">
+            <CircleAlert size={18} className="mt-0.5 shrink-0 text-rose-300" />
+            <div>
+              <h3 className="text-sm font-bold text-rose-200">PR Summary Failed</h3>
+              <p className="mt-1 text-xs text-rose-200/80">{prSummaryError}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {prSummaryResult && !prSummaryLoading && (
+        <div className="rounded-2xl border border-indigo-400/30 bg-slate-900/80 p-5 shadow-2xl">
+          {/* Header */}
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-300">
+                <FileText size={20} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-indigo-100">PR Review Summary</h3>
+                  <span
+                    className={`rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase ${
+                      prSummaryResult.verdict.includes("Blocked")
+                        ? "border-rose-400/30 bg-rose-500/10 text-rose-300"
+                        : prSummaryResult.verdict.includes("Needs Attention")
+                        ? "border-amber-400/30 bg-amber-500/10 text-amber-300"
+                        : "border-emerald-400/30 bg-emerald-500/10 text-emerald-300"
+                    }`}
+                  >
+                    {prSummaryResult.verdict}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Health Score: <strong className="text-indigo-300">{prSummaryResult.health_score}/100</strong>
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleCopyPRMarkdown}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-400/40 bg-indigo-500/20 px-3 py-1.5 text-xs font-semibold text-indigo-200 hover:bg-indigo-500/30 transition"
+            >
+              {prSummaryCopied ? <Check size={14} className="text-emerald-300" /> : <Copy size={14} />}
+              {prSummaryCopied ? "Copied Markdown!" : "Copy PR Markdown"}
+            </button>
+          </div>
+
+          {/* Executive Overview */}
+          <div className="mb-4 rounded-xl border border-indigo-500/20 bg-indigo-950/20 p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-400 mb-1">
+              Executive Overview
+            </p>
+            <p className="text-xs leading-relaxed text-slate-200">
+              {prSummaryResult.executive_overview}
+            </p>
+          </div>
+
+          {/* Prioritized Fix List Table */}
+          {prSummaryResult.prioritized_fixes && prSummaryResult.prioritized_fixes.length > 0 && (
+            <div>
+              <div className="mb-2 flex items-center gap-1.5 text-xs font-bold text-slate-300">
+                <ListOrdered size={15} className="text-cyan-400" />
+                <span>Prioritized Fix Checklist ({prSummaryResult.prioritized_fixes.length})</span>
+              </div>
+
+              <div className="overflow-x-auto rounded-xl border border-slate-800">
+                <table className="w-full text-left text-xs">
+                  <thead className="border-b border-slate-800 bg-slate-950/60 text-[10px] uppercase text-slate-400 font-semibold tracking-wider">
+                    <tr>
+                      <th className="px-3 py-2">Rank</th>
+                      <th className="px-3 py-2">Issue</th>
+                      <th className="px-3 py-2">Line</th>
+                      <th className="px-3 py-2">Severity</th>
+                      <th className="px-3 py-2">Recommended Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60 bg-slate-950/40">
+                    {prSummaryResult.prioritized_fixes.map((fix) => (
+                      <tr key={fix.priority} className="hover:bg-slate-900/50 transition">
+                        <td className="px-3 py-2.5 font-mono text-cyan-300">#{fix.priority}</td>
+                        <td className="px-3 py-2.5 font-semibold text-slate-200">{fix.title}</td>
+                        <td className="px-3 py-2.5 font-mono text-slate-400">L{fix.line}</td>
+                        <td className="px-3 py-2.5">
+                          <span
+                            className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${
+                              fix.severity.toLowerCase() === "high"
+                                ? "bg-rose-500/20 text-rose-300"
+                                : fix.severity.toLowerCase() === "medium"
+                                ? "bg-amber-500/20 text-amber-300"
+                                : "bg-cyan-500/20 text-cyan-300"
+                            }`}
+                          >
+                            {fix.severity}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2.5 text-slate-300">{fix.action_required}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ==============================================
           NO FINDINGS
       =============================================== */}
 
@@ -906,6 +1114,16 @@ export default function ResultCard({ result, error }) {
 
           </div>
         )}
+
+      {/* ==============================================
+          CONVERSATIONAL ASSISTANT DRAWER
+      =============================================== */}
+      <ConversationalAssistant
+        analysisId={analysisId}
+        language={language}
+        isOpen={isAssistantOpen}
+        onClose={() => setIsAssistantOpen(false)}
+      />
 
     </div>
   );
@@ -991,6 +1209,12 @@ function SummaryCard({
       border: "border-cyan-400/20",
       bg: "bg-cyan-400/5",
       text: "text-cyan-300",
+    },
+
+    emerald: {
+      border: "border-emerald-400/20",
+      bg: "bg-emerald-400/5",
+      text: "text-emerald-300",
     },
   };
 

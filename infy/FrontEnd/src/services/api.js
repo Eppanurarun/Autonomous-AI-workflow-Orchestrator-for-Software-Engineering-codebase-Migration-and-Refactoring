@@ -65,4 +65,30 @@ export async function generateRemediation(analysisId) {
   return parseResponse(response);
 }
 
+export async function getPRSummary(analysisId) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/summary/${encodeURIComponent(analysisId)}`,
+    {
+      method: "GET",
+    }
+  );
+
+  return parseResponse(response);
+}
+
+export async function sendChatMessage({ query, analysisId, language, history }) {
+  const response = await fetch(`${API_BASE_URL}/api/assistant/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query,
+      analysis_id: analysisId || null,
+      language: language || "python",
+      history: history || [],
+    }),
+  });
+
+  return parseResponse(response);
+}
+
 export { API_BASE_URL };
