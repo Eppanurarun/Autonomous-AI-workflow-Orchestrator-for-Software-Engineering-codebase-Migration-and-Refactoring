@@ -81,6 +81,74 @@ class PRSummaryAgent:
             total=len(actionable_findings),
         )
 
+    @staticmethod
+    def _extract_action(finding: Finding, language: str = "python") -> str:
+        title = (finding.title or "").lower()
+        desc = (finding.description or "").lower()
+
+        # Specific concise direct recommendations
+        if "sql injection" in title or "sql injection" in desc:
+            return "Use parameterized queries with prepared statements instead of dynamic SQL concatenation."
+        if "secret" in title or "credential" in title or "key" in title or "hardcoded" in title:
+            return "Move hardcoded secret/credentials to environment variables (e.g. os.getenv) or secret vaults."
+        if "command injection" in title or "os.system" in desc or "subprocess" in desc:
+            return "Avoid shell=True and os.system; use subprocess.run with argument list parameter binding."
+        if "xss" in title or "cross-site scripting" in desc:
+            return "Contextually escape and sanitize untrusted variables before rendering in HTML output."
+        if "hash" in title or "cryptograph" in title:
+            return "Replace weak MD5/SHA1 algorithm with bcrypt, argon2, or SHA-256 for secure hashing."
+        if "docstring" in title:
+            return "Add a descriptive docstring explaining function purpose, parameters, and return value."
+        if "complexity" in title or "cyclomatic" in desc:
+            return "Refactor large conditional blocks into smaller, modular single-responsibility helper functions."
+        if "mutable default" in title or "mutable" in desc:
+            return "Replace mutable default argument (list/dict) with None and initialize inside the function body."
+        if "wildcard" in title or "import *" in desc:
+            return "Replace wildcard 'import *' with explicit imports to prevent namespace pollution."
+        if "bare except" in title or "broad exception" in desc or "catch-all" in desc:
+            return "Catch specific exception types instead of bare 'except:' to avoid masking critical runtime errors."
+
+        # Fallback: extract the first actual recommendation line (skipping generic headers)
+        if finding.recommendation:
+            lines = [l.strip() for l in finding.recommendation.splitlines() if l.strip()]
+            for line in lines:
+                if (
+                    line.endswith(":")
+                    or line.lower().startswith("prevention")
+                    or line.lower().startswith("owasp top 10")
+                    or line.lower().startswith("no sufficiently")
+                ):
+                    continue
+                clean = re.sub(r"^\d+[\.\)]\s*", "", line)
+                if len(clean) > 15:
+                    return clean[:120]
+
+        return f"Refactor {finding.title} on line {finding.line} according to established {language.capitalize()} secure coding guidelines."
+
+    def generate_summary(
+        self,
+        analysis_id: str,
+        findings: List[Finding],
+        code: str = "",
+        language: str = "python",
+    ) -> PRSummaryResponse:
+        """
+        Compiles all findings into a structured Pull Request style summary.
+        """
+        # Exclude metadata metrics from fix counts
+        actionable_findings = [f for f in findings if f.title != "Software Architecture Metrics"]
+
+        high_findings = [f for f in actionable_findings if (f.severity or "").lower() == "high"]
+        med_findings = [f for f in actionable_findings if (f.severity or "").lower() == "medium"]
+        low_findings = [f for f in actionable_findings if (f.severity or "").lower() == "low"]
+
+        breakdown = SeverityBreakdown(
+            high=len(high_findings),
+            medium=len(med_findings),
+            low=len(low_findings),
+            total=len(actionable_findings),
+        )
+
         health_score = self.calculate_health_score(findings)
         verdict = self._determine_verdict(breakdown.high, breakdown.medium, health_score)
 
@@ -94,9 +162,7 @@ class PRSummaryAgent:
                 or any(k in f.title.lower() for k in ["injection", "xss", "secret", "hash", "exec", "command", "crypto"])
             ) else "Code Quality"
 
-            action = f.recommendation.split("\n")[0].strip() if f.recommendation else f"Fix {f.title} on line {f.line}"
-            if len(action) > 120:
-                action = action[:117] + "..."
+            action = self._extract_action(f, language)
 
             prioritized_fixes.append(
                 PrioritizedFix(
