@@ -21,11 +21,11 @@ async function parseResponse(response) {
   return data;
 }
 
-export async function submitCode({ language, code }) {
+export async function submitCode({ language, code, filename }) {
   const response = await fetch(`${API_BASE_URL}/api/code/submit`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ language, code })
+    body: JSON.stringify({ language, code, filename: filename || undefined })
   });
   return parseResponse(response);
 }
@@ -44,6 +44,11 @@ export async function uploadCodeFile(file) {
 
 export async function getAnalysisHistory() {
   const response = await fetch(`${API_BASE_URL}/api/analysis`);
+  return parseResponse(response);
+}
+
+export async function getAnalysisById(analysisId) {
+  const response = await fetch(`${API_BASE_URL}/api/analysis/${encodeURIComponent(analysisId)}`);
   return parseResponse(response);
 }
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, CircleAlert, FileCode2, RotateCcw, Send, ShieldCheck, Sparkles } from "lucide-react";
 import CodeEditor from "../components/CodeEditor";
 import FileUpload from "../components/FileUpload";
@@ -9,13 +9,23 @@ import { DEFAULT_CODE } from "../types/analysis";
 import { submitCode } from "../services/api";
 
 
-export default function CodeReview({ onNavigate }) {
-  const [language, setLanguage] = useState("");
-  const [code, setCode] = useState("");
-  const [fileName, setFileName] = useState("");
+export default function CodeReview({ onNavigate, initialAnalysis }) {
+  const [language, setLanguage] = useState(initialAnalysis?.language || "");
+  const [code, setCode] = useState(initialAnalysis?.code || "");
+  const [fileName, setFileName] = useState(initialAnalysis?.filename || "");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(initialAnalysis || null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (initialAnalysis) {
+      setLanguage(initialAnalysis.language || "python");
+      setCode(initialAnalysis.code || "");
+      setFileName(initialAnalysis.filename || "");
+      setResult(initialAnalysis);
+      setError("");
+    }
+  }, [initialAnalysis]);
 
   const changeLanguage = (value) => {
     setLanguage(value);
@@ -49,7 +59,7 @@ export default function CodeReview({ onNavigate }) {
     setResult(null);
 
     try {
-      const data = await submitCode({ language, code });
+      const data = await submitCode({ language, code, filename: fileName });
       setResult(data);
     } catch (err) {
       setError(err.message || "Unable to submit code. Please check your backend.");

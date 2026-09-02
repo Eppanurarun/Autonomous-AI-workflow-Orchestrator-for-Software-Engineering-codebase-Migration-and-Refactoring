@@ -29,6 +29,7 @@ class SQLiteStorageService:
                 """
                 CREATE TABLE IF NOT EXISTS analyses (
                     analysis_id TEXT PRIMARY KEY,
+                    filename TEXT,
                     status TEXT NOT NULL,
                     language TEXT NOT NULL,
                     code TEXT NOT NULL,
@@ -39,6 +40,12 @@ class SQLiteStorageService:
                 )
                 """
             )
+
+            # Auto-migrate table if filename column doesn't exist yet
+            try:
+                connection.execute("ALTER TABLE analyses ADD COLUMN filename TEXT")
+            except sqlite3.OperationalError:
+                pass
 
             connection.execute(
                 """
@@ -55,8 +62,10 @@ class SQLiteStorageService:
 
     @staticmethod
     def _decode(row: sqlite3.Row) -> Dict[str, Any]:
+        keys = row.keys()
         return {
             "analysis_id": row["analysis_id"],
+            "filename": row["filename"] if "filename" in keys and row["filename"] else ("main." + ("py" if row["language"] == "python" else "java")),
             "status": row["status"],
             "language": row["language"],
             "code": row["code"],
@@ -73,12 +82,14 @@ class SQLiteStorageService:
         analysis_id: str,
         data: Dict[str, Any],
     ) -> None:
+        filename = data.get("filename") or ("main." + ("py" if data.get("language") == "python" else "java"))
         with self._connect() as connection:
             connection.execute(
                 """
                 INSERT OR REPLACE INTO analyses
                 (
                     analysis_id,
+                    filename,
                     status,
                     language,
                     code,
@@ -86,10 +97,11 @@ class SQLiteStorageService:
                     errors,
                     findings
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     analysis_id,
+                    filename,
                     data["status"],
                     data["language"],
                     data["code"],
