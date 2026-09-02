@@ -96,12 +96,14 @@ class ConversationalAssistantAgent:
         if self.client:
             try:
                 system_prompt = (
-                    f"You are an expert secure coding mentor and AI code review assistant. "
-                    f"You help developers understand vulnerabilities, explain code smells, and provide secure code examples.\n"
-                    f"Programming Language: {language}\n\n"
+                    f"You are an expert secure coding mentor and AI code review assistant named CodeGuard AI Assistant.\n"
+                    f"You specialize in programming, code quality, software architecture, and OWASP security analysis.\n"
+                    f"Programming Language Context: {language}\n\n"
                     f"Relevant Knowledge Base Guidelines:\n{rag_context_text}\n"
                     f"{analysis_context}\n"
-                    f"Provide clear, actionable, friendly, and well-explained answers with code snippets where helpful."
+                    f"Instructions:\n"
+                    f"1. For programming, code review, or security questions: Provide a clear, friendly, well-explained answer with code examples where helpful.\n"
+                    f"2. For general knowledge / trivia questions (e.g. 'capital of India'): Answer briefly and politely (e.g. 'New Delhi!'), then gently offer help with code security or refactoring."
                 )
 
                 history_turns = []
@@ -136,11 +138,12 @@ class ConversationalAssistantAgent:
             )
         else:
             fallback_text = (
-                f"Based on secure coding best practices for **{language.capitalize()}**:\n\n"
+                f"I am your **CodeGuard AI Assistant**, specialized in **{language.capitalize()}** code quality and OWASP security analysis.\n\n"
+                f"If your query is off-topic, feel free to ask me anything about code review, security vulnerabilities, or refactoring advice!\n\n"
+                f"**Core Security Guidelines**:\n"
                 f"- **Input Validation**: Never trust raw user inputs; sanitize and validate against strict whitelists.\n"
-                f"- **Parameterized Queries**: Always use prepared statements or parameterized bindings for SQL/database operations.\n"
-                f"- **Secrets Management**: Store API keys, tokens, and credentials in environment variables or a secrets vault.\n"
-                f"- **Output Encoding**: Contextually escape dynamic data before rendering in web templates."
+                f"- **Parameterized Queries**: Always use prepared statements or bound parameters for database queries.\n"
+                f"- **Secrets Management**: Store API keys, passwords, and tokens in environment variables or secret vaults."
             )
 
         return ChatResponse(
