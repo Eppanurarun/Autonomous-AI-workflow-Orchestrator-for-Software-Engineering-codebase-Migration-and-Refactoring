@@ -40,6 +40,23 @@ class ConversationalAssistantAgent:
         """
         Answers developer follow-up queries using RAG context and optional LLM.
         """
+        # Step 0: Friendly greeting handler
+        cleaned_lower = query.strip().lower().rstrip("!?.")
+        if cleaned_lower in ["hi", "hii", "hiii", "hiiii", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening", "help"]:
+            greeting_msg = (
+                f"Hello! 👋 I am your **CodeGuard AI Assistant**, specializing in **{language.capitalize()}** code quality and OWASP security.\n\n"
+                f"Feel free to ask me anything about your code, or try one of these questions:\n"
+                f"- *\"How can I prevent SQL injection in my code?\"*\n"
+                f"- *\"Why are hardcoded secrets dangerous and how do I use environment variables?\"*\n"
+                f"- *\"How do I fix mutable default arguments in Python?\"*\n"
+                f"- *\"Explain the security vulnerabilities found in this file.\"*\n\n"
+                f"What would you like to inspect or improve?"
+            )
+            return ChatResponse(
+                response=greeting_msg,
+                sources=[],
+            )
+
         # Step 1: Fetch RAG context
         rag_results = self.rag_service.query(
             query_text=query,
