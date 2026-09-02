@@ -1,6 +1,7 @@
-import { BarChart3, Clock3, Code2, ShieldCheck, TerminalSquare } from "lucide-react";
+import { Home, BarChart3, Clock3, Code2, ShieldCheck, TerminalSquare } from "lucide-react";
 
 const NAV_ITEMS = [
+  { id: "landing", label: "Home", icon: Home },
   { id: "dashboard", label: "Dashboard", icon: BarChart3 },
   { id: "analyze", label: "Analyze", icon: Code2 },
   { id: "history", label: "History", icon: Clock3 }
@@ -12,7 +13,7 @@ export default function Navbar({ activePage, onNavigate }) {
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 lg:px-8">
         <button
           type="button"
-          onClick={() => onNavigate("dashboard")}
+          onClick={() => onNavigate("landing")}
           className="group flex items-center gap-3 text-left"
         >
           <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-cyan-300 to-blue-600 text-slate-950 shadow-glow transition duration-300 group-hover:scale-105">
