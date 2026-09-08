@@ -103,4 +103,8 @@ export async function sendChatMessage({ query, analysisId, language, history }) 
   return parseResponse(response);
 }
 
+export function downloadPDFReportUrl(analysisId) {
+  return `${API_BASE_URL}/api/report/pdf/${encodeURIComponent(analysisId)}`;
+}
+
 export { API_BASE_URL };

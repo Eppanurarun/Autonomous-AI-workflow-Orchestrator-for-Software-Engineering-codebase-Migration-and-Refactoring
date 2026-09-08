@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { generateRemediation, getPRSummary } from "../services/api";
+import { generateRemediation, getPRSummary, downloadPDFReportUrl } from "../services/api";
 import ConversationalAssistant from "./ConversationalAssistant";
 
 import {
@@ -136,6 +136,10 @@ export default function ResultCard({ result, error }) {
   };
 
   const handleDownloadPDF = () => {
+    if (analysisId && analysisId !== "—") {
+      window.open(downloadPDFReportUrl(analysisId), "_blank");
+      return;
+    }
     if (!prSummaryResult) return;
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
