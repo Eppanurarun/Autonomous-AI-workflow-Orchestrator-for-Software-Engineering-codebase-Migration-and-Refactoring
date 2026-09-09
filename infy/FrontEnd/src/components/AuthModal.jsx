@@ -24,7 +24,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
         if (!fullName.trim()) {
           throw new Error("Full name is required.");
         }
-        res = await signupUser({ email, password, full_name: fullName, role });
+        res = await signupUser({ email, password, full_name: fullName, role: "developer" });
       } else {
         res = await loginUser({ email, password });
       }
@@ -144,20 +144,6 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
               />
             </div>
           </div>
-
-          {isSignUp && (
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Account Role</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950/80 py-2.5 px-3 text-sm text-white focus:border-cyan-400 focus:outline-none"
-              >
-                <option value="developer">Developer</option>
-                <option value="admin">Administrator</option>
-              </select>
-            </div>
-          )}
 
           <button
             type="submit"

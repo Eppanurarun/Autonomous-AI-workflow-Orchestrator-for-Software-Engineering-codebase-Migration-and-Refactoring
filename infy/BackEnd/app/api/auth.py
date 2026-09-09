@@ -19,13 +19,12 @@ def signup(payload: SignUpRequest):
         )
 
     hashed_pw = hash_password(payload.password)
-    role = payload.role if payload.role in ["developer", "admin"] else "developer"
 
     user = storage_service.create_user(
         email=payload.email,
         hashed_password=hashed_pw,
         full_name=payload.full_name,
-        role=role
+        role="developer"
     )
 
     token = create_jwt_token({
