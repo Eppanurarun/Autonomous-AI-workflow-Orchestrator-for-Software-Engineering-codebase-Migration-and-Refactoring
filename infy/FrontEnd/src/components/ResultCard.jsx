@@ -239,7 +239,7 @@ export default function ResultCard({ result, error }) {
         </table>
 
         <div style="margin-top: 40px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-          Smart Code Inspection Platform with Vulnerability Detection System • Milestone 4 Export
+          Smart Code Inspection Platform with Vulnerability Detection System • Automated Code Review Report
         </div>
         <script>
           window.onload = function() { window.print(); }

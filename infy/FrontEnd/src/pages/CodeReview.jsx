@@ -215,7 +215,7 @@ export default function CodeReview({ onNavigate, initialAnalysis }) {
         </div>
 
         <footer className="mt-10 flex flex-col gap-2 border-t border-slate-800/70 pt-5 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-          <span>Milestone 2 workspace • Code quality + security analysis</span>
+          <span>Interactive Code Inspection Workspace • Quality & OWASP Security Analysis</span>
           <button type="button" onClick={() => onNavigate("dashboard")} className="text-slate-500 transition hover:text-cyan-300">
             Back to dashboard
           </button>

@@ -86,7 +86,7 @@ export default function Dashboard({ onNavigate, onSelectAnalysis }) {
           <div className="relative max-w-3xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/15 bg-cyan-400/5 px-3 py-1.5 text-xs font-medium text-cyan-200">
               <Sparkles size={14} />
-              Milestone 3 • Multi-Agent Code Intelligence Platform
+              Enterprise Multi-Agent Code Intelligence Platform
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
               Make every line of code safer.
