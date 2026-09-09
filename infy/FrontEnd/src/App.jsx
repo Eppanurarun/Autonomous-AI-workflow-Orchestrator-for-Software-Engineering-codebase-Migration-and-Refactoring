@@ -167,9 +167,15 @@ function HistoryView({ onNavigate, onSelectAnalysis }) {
   );
 }
 
+import AdminDashboard from "./pages/AdminDashboard";
+import AuthModal from "./components/AuthModal";
+import { getAuthUser, clearAuth } from "./services/api";
+
 export default function App() {
   const [activePage, setActivePage] = useState("landing");
   const [activeAnalysis, setActiveAnalysis] = useState(null);
+  const [authUser, setAuthUser] = useState(() => getAuthUser());
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   const navigate = (page) => setActivePage(page);
 
@@ -178,13 +184,41 @@ export default function App() {
     setActivePage("analyze");
   };
 
+  const handleAuthSuccess = (userData) => {
+    setAuthUser(userData);
+    if (userData.role === "admin") {
+      setActivePage("admin");
+    }
+  };
+
+  const handleLogout = () => {
+    clearAuth();
+    setAuthUser(null);
+    if (activePage === "admin") {
+      setActivePage("landing");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050b14] text-slate-100">
-      <Navbar activePage={activePage} onNavigate={navigate} />
+      <Navbar
+        activePage={activePage}
+        onNavigate={navigate}
+        authUser={authUser}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onLogout={handleLogout}
+      />
       {activePage === "landing" && <LandingPage onNavigate={navigate} />}
       {activePage === "dashboard" && <Dashboard onNavigate={navigate} onSelectAnalysis={handleSelectAnalysis} />}
       {activePage === "analyze" && <CodeReview onNavigate={navigate} initialAnalysis={activeAnalysis} />}
       {activePage === "history" && <HistoryView onNavigate={navigate} onSelectAnalysis={handleSelectAnalysis} />}
+      {activePage === "admin" && <AdminDashboard />}
+
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }

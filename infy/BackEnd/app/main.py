@@ -8,6 +8,8 @@ from app.api.remediation import router as remediation_router
 from app.api.summary import router as summary_router
 from app.api.assistant import router as assistant_router
 from app.api.report import router as report_router
+from app.api.auth import router as auth_router
+from app.api.admin import router as admin_router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -42,6 +44,8 @@ app.include_router(remediation_router, prefix="/api")
 app.include_router(summary_router, prefix="/api")
 app.include_router(assistant_router, prefix="/api")
 app.include_router(report_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
+app.include_router(admin_router, prefix="/api")
 
 @app.get("/")
 def read_root():

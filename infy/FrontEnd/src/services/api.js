@@ -103,6 +103,85 @@ export async function sendChatMessage({ query, analysisId, language, history }) 
   return parseResponse(response);
 }
 
+export function getAuthToken() {
+  return localStorage.getItem("codeguard_token") || "";
+}
+
+export function getAuthUser() {
+  try {
+    const data = localStorage.getItem("codeguard_user");
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveAuth(authData) {
+  localStorage.setItem("codeguard_token", authData.token);
+  localStorage.setItem("codeguard_user", JSON.stringify(authData));
+}
+
+export function clearAuth() {
+  localStorage.removeItem("codeguard_token");
+  localStorage.removeItem("codeguard_user");
+}
+
+function getAuthHeaders() {
+  const token = getAuthToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+export async function loginUser({ email, password }) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await parseResponse(response);
+  saveAuth(data);
+  return data;
+}
+
+export async function signupUser({ email, password, full_name, role }) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, full_name, role: role || "developer" })
+  });
+  const data = await parseResponse(response);
+  saveAuth(data);
+  return data;
+}
+
+export async function getCurrentUser() {
+  const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+    headers: getAuthHeaders()
+  });
+  return parseResponse(response);
+}
+
+export async function getAdminUsers() {
+  const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
+    headers: getAuthHeaders()
+  });
+  return parseResponse(response);
+}
+
+export async function toggleUserStatus(userId) {
+  const response = await fetch(`${API_BASE_URL}/api/admin/users/${encodeURIComponent(userId)}/status`, {
+    method: "POST",
+    headers: getAuthHeaders()
+  });
+  return parseResponse(response);
+}
+
+export async function getAdminStats() {
+  const response = await fetch(`${API_BASE_URL}/api/admin/stats`, {
+    headers: getAuthHeaders()
+  });
+  return parseResponse(response);
+}
+
 export function downloadPDFReportUrl(analysisId) {
   return `${API_BASE_URL}/api/report/pdf/${encodeURIComponent(analysisId)}`;
 }
