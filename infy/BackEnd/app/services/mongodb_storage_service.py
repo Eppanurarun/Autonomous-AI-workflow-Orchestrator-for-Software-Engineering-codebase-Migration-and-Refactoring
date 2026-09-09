@@ -65,20 +65,31 @@ class MongoDBStorageService:
     def save_analysis(
         self,
         analysis_id: str,
-        filename: str,
-        status: str,
-        language: str,
-        code: str,
-        syntax_valid: bool,
+        data_or_filename: Any = None,
+        status: Optional[str] = None,
+        language: Optional[str] = None,
+        code: Optional[str] = None,
+        syntax_valid: Optional[bool] = None,
         errors: Optional[List[Dict[str, Any]]] = None,
         findings: Optional[List[Dict[str, Any]]] = None,
     ) -> None:
-        display_filename = filename if filename else ("main." + ("py" if language == "python" else "java"))
-        now_str = datetime.datetime.utcnow().isoformat()
+        if isinstance(data_or_filename, dict):
+            data = data_or_filename
+            filename = data.get("filename") or ("main." + ("py" if data.get("language") == "python" else "java"))
+            status = data.get("status", "completed")
+            language = data.get("language", "python")
+            code = data.get("code", "")
+            syntax_valid = data.get("syntax_valid", True)
+            errors = data.get("errors") or []
+            findings = data.get("findings") or []
+        else:
+            filename = data_or_filename or ("main." + ("py" if (language or "python") == "python" else "java"))
+
+        now_str = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
         doc = {
             "analysis_id": analysis_id,
-            "filename": display_filename,
+            "filename": filename,
             "status": status,
             "language": language,
             "code": code,

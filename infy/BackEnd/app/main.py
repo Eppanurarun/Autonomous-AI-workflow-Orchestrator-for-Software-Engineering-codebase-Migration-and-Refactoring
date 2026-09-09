@@ -31,7 +31,6 @@ app.add_middleware(
 # Global exception handler to keep internal details secure and unexposed
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    # Avoid exposing raw Python traceback to user
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"detail": "An unexpected server error occurred. Please try again later."}
