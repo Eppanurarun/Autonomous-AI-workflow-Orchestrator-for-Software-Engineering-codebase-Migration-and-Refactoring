@@ -383,4 +383,10 @@ class SQLiteStorageService:
         }
 
 
-storage_service = SQLiteStorageService()
+try:
+    from app.services.mongodb_storage_service import MongoDBStorageService
+    storage_service = MongoDBStorageService()
+    print("[INIT] Connected to MongoDB Atlas Cloud Database successfully.")
+except Exception as _err:
+    print(f"[INIT] MongoDB Atlas fallback to SQLite Storage: {_err}")
+    storage_service = SQLiteStorageService()
