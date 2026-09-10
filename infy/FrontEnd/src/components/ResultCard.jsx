@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { generateRemediation, getPRSummary, downloadPDFReportUrl } from "../services/api";
 import ConversationalAssistant from "./ConversationalAssistant";
 
