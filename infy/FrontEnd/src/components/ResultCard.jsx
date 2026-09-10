@@ -675,16 +675,6 @@ export default function ResultCard({ result, error }) {
               <h3 className="text-xl font-extrabold text-white">Before / After Code Corrections</h3>
               <p className="text-xs text-slate-400 mt-0.5 font-mono">Analysis ID: {analysisId}</p>
             </div>
-
-            <button
-              type="button"
-              onClick={handleGenerateRemediation}
-              disabled={remediationLoading}
-              className="flex items-center gap-1.5 rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-3.5 py-2 text-xs font-bold text-cyan-200 hover:bg-cyan-400/20 transition disabled:opacity-50"
-            >
-              <Sparkles size={14} />
-              <span>{remediationLoading ? "Regenerating..." : "Regenerate AI Fixes"}</span>
-            </button>
           </div>
 
           {remediationLoading && (
