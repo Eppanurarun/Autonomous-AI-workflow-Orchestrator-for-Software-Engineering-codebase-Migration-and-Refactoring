@@ -21,8 +21,12 @@ const FILE_NAMES = {
 
 function highlightCode(code, language) {
   const langKey = language === "html" ? "markup" : language;
-  const grammar = Prism.languages[langKey] || Prism.languages.plain;
-  return Prism.highlight(code || " ", grammar, langKey);
+  const grammar = Prism.languages[langKey] || Prism.languages.markup || Prism.languages.javascript;
+  try {
+    return Prism.highlight(code || " ", grammar, langKey);
+  } catch {
+    return (code || " ").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
 }
 
 export default function CodeEditor({ code = "", language, onChange, disabled }) {
