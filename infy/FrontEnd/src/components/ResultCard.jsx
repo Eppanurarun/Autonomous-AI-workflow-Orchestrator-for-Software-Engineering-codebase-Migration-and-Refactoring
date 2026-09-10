@@ -113,6 +113,10 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
   );
 
   const handleGenerateRemediation = async () => {
+    if (!authUser) {
+      if (onOpenAuth) onOpenAuth();
+      return;
+    }
     setActiveTab("remediation");
     if (remediationResult) return;
     if (!analysisId || analysisId === "—") {
@@ -134,6 +138,10 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
   };
 
   const handleGeneratePRSummary = async () => {
+    if (!authUser) {
+      if (onOpenAuth) onOpenAuth();
+      return;
+    }
     setActiveTab("summary");
     if (prSummaryResult) return;
     if (!analysisId || analysisId === "—") {
@@ -371,66 +379,9 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
       )}
 
       {/* ==============================================
-          AUTHENTICATION GATE: DETAILED FINDINGS & AI TOOLS
+          MAIN INTERACTIVE NAVIGATION TAB BAR
       =============================================== */}
-      {!authUser ? (
-        <div className="relative overflow-hidden rounded-3xl border border-cyan-400/30 bg-gradient-to-br from-slate-900/95 via-slate-950 to-indigo-950/90 p-8 shadow-2xl text-center">
-          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" />
-
-          <div className="relative max-w-xl mx-auto space-y-4">
-            <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-cyan-400/15 border border-cyan-400/30 text-cyan-300 shadow-glow">
-              <Lock size={26} />
-            </div>
-
-            <h3 className="text-xl font-extrabold text-white sm:text-2xl">
-              Unlock Detailed Inspection & AI Remediation
-            </h3>
-
-            <p className="text-xs leading-5 text-slate-300 sm:text-sm">
-              Your initial code scan is complete! Sign in or create a free account to unlock line-by-line vulnerability diagnostics, PR review summary, AI refactoring roadmap, and interactive code chat.
-            </p>
-
-            <div className="grid gap-2.5 text-left text-xs sm:grid-cols-2 pt-2">
-              <div className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 p-3 text-slate-200">
-                <ShieldAlert size={16} className="text-cyan-400 shrink-0" />
-                <span>Line-by-Line Security Diagnostics</span>
-              </div>
-              <div className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 p-3 text-slate-200">
-                <FileText size={16} className="text-indigo-400 shrink-0" />
-                <span>PR Summary & PDF Export</span>
-              </div>
-              <div className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 p-3 text-slate-200">
-                <Sparkles size={16} className="text-emerald-400 shrink-0" />
-                <span>AI Remediation Code Fixes</span>
-              </div>
-              <div className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 p-3 text-slate-200">
-                <Bot size={16} className="text-purple-400 shrink-0" />
-                <span>Interactive AI Code Assistant</span>
-              </div>
-            </div>
-
-            <div className="pt-4">
-              {onOpenAuth && (
-                <button
-                  type="button"
-                  onClick={onOpenAuth}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-300 to-blue-500 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-glow transition hover:brightness-110"
-                >
-                  <span>Sign In / Sign Up to Unlock Details</span>
-                  <ArrowRight size={16} />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <>
-          {/* ==============================================
-              MAIN INTERACTIVE NAVIGATION TAB BAR
-              (Allows in-place switching without scrolling!)
-          =============================================== */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-1.5 flex flex-wrap items-center justify-between gap-2">
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-1.5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-1.5">
           <button
             type="button"
@@ -460,7 +411,8 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
           >
             <FileText size={15} />
             <span>{prSummaryLoading ? "Compiling PR..." : "PR Review Summary"}</span>
-            {prSummaryResult && (
+            {!authUser && <Lock size={12} className="text-amber-400 shrink-0" />}
+            {authUser && prSummaryResult && (
               <span className="rounded-full bg-indigo-500/30 px-2 py-0.5 text-[10px] text-indigo-300 font-mono">
                 {prSummaryResult.health_score}%
               </span>
@@ -479,7 +431,8 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
           >
             <Sparkles size={15} />
             <span>{remediationLoading ? "Generating Fixes..." : "AI Remediation Roadmap"}</span>
-            {remediationResult && (
+            {!authUser && <Lock size={12} className="text-amber-400 shrink-0" />}
+            {authUser && remediationResult && (
               <span className="rounded-full bg-emerald-500/30 px-2 py-0.5 text-[10px] text-emerald-300">
                 Ready
               </span>
@@ -489,16 +442,23 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
 
         <button
           type="button"
-          onClick={() => setIsAssistantOpen(true)}
+          onClick={() => {
+            if (!authUser) {
+              if (onOpenAuth) onOpenAuth();
+            } else {
+              setIsAssistantOpen(true);
+            }
+          }}
           className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-200 hover:bg-emerald-500/20 transition"
         >
           <Bot size={15} />
           <span>Ask Code Assistant</span>
+          {!authUser && <Lock size={12} className="text-amber-400 shrink-0" />}
         </button>
       </div>
 
       {/* ==============================================
-          TAB 1: UNIFIED FINDINGS LIST
+          TAB 1: UNIFIED FINDINGS LIST (WITH TEASER PREVIEW FOR GUESTS)
       =============================================== */}
       {activeTab === "findings" && (
         <div className="rounded-2xl border border-slate-700/80 bg-slate-900/50 p-5 space-y-4">
@@ -553,29 +513,61 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
                         </span>
                       </div>
                       <span className="rounded border border-slate-700 bg-slate-800/80 px-2 py-0.5 font-mono text-[11px] text-slate-300">
-                        Line {item.line ?? "—"}
+                        {authUser ? (
+                          `Line ${item.line ?? "—"}`
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-cyan-300 font-bold">
+                            <Lock size={11} /> Line Locked
+                          </span>
+                        )}
                       </span>
                     </div>
 
                     <h4 className="text-sm font-bold text-slate-100">{item.title}</h4>
                     <p className="mt-1 text-xs text-slate-400 leading-relaxed">{item.description}</p>
 
-                    {item.code_snippet && (
-                      <div className="mt-2.5 rounded-lg border border-slate-800 bg-slate-900/80 p-2.5">
-                        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Flagged Snippet</p>
-                        <pre className="overflow-x-auto font-mono text-xs text-slate-200">
-                          <code>{item.code_snippet}</code>
-                        </pre>
-                      </div>
-                    )}
+                    {authUser ? (
+                      <>
+                        {item.code_snippet && (
+                          <div className="mt-2.5 rounded-lg border border-slate-800 bg-slate-900/80 p-2.5">
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Flagged Snippet</p>
+                            <pre className="overflow-x-auto font-mono text-xs text-slate-200">
+                              <code>{item.code_snippet}</code>
+                            </pre>
+                          </div>
+                        )}
 
-                    {item.recommendation && (
-                      <div className="mt-2.5 rounded-lg border border-cyan-400/15 bg-cyan-400/5 p-2.5 text-xs text-cyan-200/90 leading-relaxed">
-                        <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-cyan-300 mb-1">
-                          <Lightbulb size={12} />
-                          <span>RAG Knowledge Base Guidance</span>
+                        {item.recommendation && (
+                          <div className="mt-2.5 rounded-lg border border-cyan-400/15 bg-cyan-400/5 p-2.5 text-xs text-cyan-200/90 leading-relaxed">
+                            <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-cyan-300 mb-1">
+                              <Lightbulb size={12} />
+                              <span>RAG Knowledge Base Guidance</span>
+                            </div>
+                            <p className="whitespace-pre-line">{item.recommendation}</p>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="mt-3 rounded-xl border border-cyan-400/20 bg-gradient-to-r from-cyan-950/40 via-slate-950 to-indigo-950/40 p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
+                        <div className="flex items-center gap-2.5">
+                          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-cyan-400/15 text-cyan-300 border border-cyan-400/30">
+                            <Lock size={15} />
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-200">Line snippets & RAG fix recommendations locked</p>
+                            <p className="text-[11px] text-slate-400">Sign in or register to unlock exact line locations and automated AI patches.</p>
+                          </div>
                         </div>
-                        <p className="whitespace-pre-line">{item.recommendation}</p>
+                        {onOpenAuth && (
+                          <button
+                            type="button"
+                            onClick={onOpenAuth}
+                            className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-cyan-300 to-blue-500 px-3 py-1.5 text-xs font-bold text-slate-950 shadow-glow hover:brightness-110 transition"
+                          >
+                            <span>Sign In to Unlock</span>
+                            <ArrowRight size={13} />
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -587,6 +579,32 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
               <p className="text-xs font-semibold text-emerald-300">
                 ✓ No findings match the active filter.
               </p>
+            </div>
+          )}
+
+          {!authUser && (
+            <div className="mt-6 relative overflow-hidden rounded-2xl border border-cyan-400/30 bg-gradient-to-br from-slate-900/95 via-slate-950 to-indigo-950/90 p-6 shadow-2xl text-center">
+              <div className="relative max-w-lg mx-auto space-y-3">
+                <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-cyan-400/15 border border-cyan-400/30 text-cyan-300 shadow-glow">
+                  <Lock size={22} />
+                </div>
+                <h3 className="text-lg font-extrabold text-white">
+                  Unlock PR Summary, AI Remediation & Code Assistant
+                </h3>
+                <p className="text-xs leading-5 text-slate-300">
+                  Sign in or create a free account to unlock automated PR reviews, exportable PDF reports, line-by-line AI refactoring roadmaps, and interactive AI chat.
+                </p>
+                {onOpenAuth && (
+                  <button
+                    type="button"
+                    onClick={onOpenAuth}
+                    className="mt-2 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-300 to-blue-500 px-5 py-3 text-xs font-bold text-slate-950 shadow-glow transition hover:brightness-110"
+                  >
+                    <span>Sign In / Sign Up to Unlock All Features</span>
+                    <ArrowRight size={15} />
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -844,8 +862,6 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
         isOpen={isAssistantOpen}
         onClose={() => setIsAssistantOpen(false)}
       />
-        </>
-      )}
     </div>
   );
 }
