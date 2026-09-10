@@ -25,7 +25,8 @@ function highlightCode(code, language) {
   return Prism.highlight(code || " ", grammar, langKey);
 }
 
-export default function CodeEditor({ code, language, onChange, disabled }) {
+export default function CodeEditor({ code = "", language, onChange, disabled }) {
+  const safeCode = code || "";
   const currentLang = language || "python";
   const displayFile = FILE_NAMES[currentLang] || "source_code.txt";
 
@@ -47,14 +48,14 @@ export default function CodeEditor({ code, language, onChange, disabled }) {
 
       <div className="flex min-h-[430px] overflow-auto">
         <div className="select-none border-r border-slate-800/80 bg-slate-950/40 px-4 py-5 text-right font-mono text-xs leading-6 text-slate-600">
-          {Array.from({ length: Math.max(code.split("\n").length, 1) }, (_, i) => (
+          {Array.from({ length: Math.max(safeCode.split("\n").length, 1) }, (_, i) => (
             <div key={i}>{i + 1}</div>
           ))}
         </div>
 
         <div className="code-editor min-w-0 flex-1 font-mono text-[13px] leading-6">
           <Editor
-            value={code}
+            value={safeCode}
             onValueChange={onChange}
             highlight={(value) => highlightCode(value, currentLang)}
             padding={20}
