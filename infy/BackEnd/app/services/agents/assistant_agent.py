@@ -40,15 +40,25 @@ class ConversationalAssistantAgent:
         """
         Answers developer follow-up queries using RAG context and optional LLM.
         """
+        display_lang = {
+            "python": "Python",
+            "java": "Java",
+            "javascript": "JavaScript",
+            "typescript": "TypeScript",
+            "cpp": "C++",
+            "go": "Go",
+            "html": "HTML",
+        }.get((language or "").lower(), (language or "multi-language").capitalize())
+
         # Step 0: Friendly greeting handler
         cleaned_lower = query.strip().lower().rstrip("!?.")
         if cleaned_lower in ["hi", "hii", "hiii", "hiiii", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening", "help"]:
             greeting_msg = (
-                f"Hello! 👋 I am your **CodeGuard AI Assistant**, specializing in **{language.capitalize()}** code quality and OWASP security.\n\n"
+                f"Hello! 👋 I am your **CodeGuard AI Assistant**, specializing in **{display_lang}** (and Python, Java, JS, TS, C++, Go, HTML) code quality and OWASP security.\n\n"
                 f"Feel free to ask me anything about your code, or try one of these questions:\n"
                 f"- *\"How can I prevent SQL injection in my code?\"*\n"
                 f"- *\"Why are hardcoded secrets dangerous and how do I use environment variables?\"*\n"
-                f"- *\"How do I fix mutable default arguments in Python?\"*\n"
+                f"- *\"How do I refactor code for better maintainability?\"*\n"
                 f"- *\"Explain the security vulnerabilities found in this file.\"*\n\n"
                 f"What would you like to inspect or improve?"
             )
@@ -98,12 +108,12 @@ class ConversationalAssistantAgent:
                 system_prompt = (
                     f"You are an expert secure coding mentor and AI code review assistant named CodeGuard AI Assistant.\n"
                     f"You specialize strictly in programming, code quality, software architecture, and OWASP security vulnerability analysis.\n"
-                    f"Programming Language Context: {language}\n\n"
+                    f"Supported languages: Python, Java, JavaScript, TypeScript, C++, Go, HTML. Current Language Context: {display_lang}\n\n"
                     f"Relevant Knowledge Base Guidelines:\n{rag_context_text}\n"
                     f"{analysis_context}\n"
                     f"Instructions:\n"
                     f"1. For programming, code quality, refactoring, or security questions: Provide a clear, expert, well-explained answer with code snippets where helpful.\n"
-                    f"2. For any off-topic general knowledge or trivia questions (such as geography, weather, sports, general history, or 'capital of India'): Politely state that you are specialized exclusively in code quality and security analysis, and invite the user to ask any questions regarding code review, OWASP vulnerability remediation, or secure coding guidelines for {language.capitalize()}."
+                    f"2. For any off-topic general knowledge or trivia questions (such as geography, weather, sports, general history, or 'capital of India'): Politely state that you are specialized exclusively in code quality and security analysis, and invite the user to ask any questions regarding code review, OWASP vulnerability remediation, or secure coding guidelines for {display_lang}."
                 )
 
                 history_turns = []
@@ -137,9 +147,9 @@ class ConversationalAssistantAgent:
         ]
         if any(keyword in query_lower for keyword in off_topic_keywords):
             fallback_text = (
-                f"I am your **CodeGuard AI Assistant**, specialized exclusively in **{language.capitalize()}** code quality, OWASP security analysis, and software architecture.\n\n"
+                f"I am your **CodeGuard AI Assistant**, specialized in multi-language code quality (**Python, Java, JavaScript, TypeScript, C++, Go, HTML**) and OWASP security analysis.\n\n"
                 f"I don't answer general trivia or off-topic questions (like geography or weather). Feel free to ask me anything about:\n"
-                f"- **Vulnerability Remediation** (e.g. *\"How do I fix SQL injection?\"*)\n"
+                f"- **Vulnerability Remediation** (e.g. *\"How do I fix SQL injection in {display_lang}?\"*)\n"
                 f"- **Code Refactoring & Quality** (e.g. *\"How do I improve this code?\"*)\n"
                 f"- **OWASP Security Guidelines** (e.g. *\"How do I store API keys safely?\"*)"
             )
