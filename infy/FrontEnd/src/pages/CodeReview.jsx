@@ -10,9 +10,9 @@ import { submitCode } from "../services/api";
 
 
 export default function CodeReview({ onNavigate, initialAnalysis }) {
-  const [language, setLanguage] = useState(initialAnalysis?.language || "");
-  const [code, setCode] = useState(initialAnalysis?.code || "");
-  const [fileName, setFileName] = useState(initialAnalysis?.filename || "");
+  const [language, setLanguage] = useState(initialAnalysis?.language || "python");
+  const [code, setCode] = useState(initialAnalysis?.code || DEFAULT_CODE);
+  const [fileName, setFileName] = useState(initialAnalysis?.filename || "main.py");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(initialAnalysis || null);
   const [error, setError] = useState("");
@@ -20,9 +20,15 @@ export default function CodeReview({ onNavigate, initialAnalysis }) {
   useEffect(() => {
     if (initialAnalysis) {
       setLanguage(initialAnalysis.language || "python");
-      setCode(initialAnalysis.code || "");
+      setCode(initialAnalysis.code || DEFAULT_CODE);
       setFileName(initialAnalysis.filename || "");
       setResult(initialAnalysis);
+      setError("");
+    } else {
+      setLanguage("python");
+      setCode(DEFAULT_CODE);
+      setFileName("main.py");
+      setResult(null);
       setError("");
     }
   }, [initialAnalysis]);

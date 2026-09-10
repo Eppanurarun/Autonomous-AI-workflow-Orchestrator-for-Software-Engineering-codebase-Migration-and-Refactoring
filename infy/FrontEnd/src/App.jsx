@@ -213,7 +213,13 @@ export default function App() {
       />
       {activePage === "landing" && <LandingPage onNavigate={navigate} />}
       {activePage === "dashboard" && <Dashboard onNavigate={navigate} onSelectAnalysis={handleSelectAnalysis} />}
-      {activePage === "analyze" && <CodeReview onNavigate={navigate} initialAnalysis={activeAnalysis} />}
+      {activePage === "analyze" && (
+        <CodeReview
+          key={activeAnalysis ? (activeAnalysis.analysis_id || activeAnalysis.id || "existing") : "new-inspection"}
+          onNavigate={navigate}
+          initialAnalysis={activeAnalysis}
+        />
+      )}
       {activePage === "history" && <HistoryView onNavigate={navigate} onSelectAnalysis={handleSelectAnalysis} />}
       {activePage === "admin" && <AdminDashboard />}
 
