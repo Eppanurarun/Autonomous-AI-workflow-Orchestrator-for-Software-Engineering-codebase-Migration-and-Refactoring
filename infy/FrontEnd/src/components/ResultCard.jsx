@@ -37,6 +37,7 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
   const [prSummaryResult, setPrSummaryResult] = useState(null);
   const [prSummaryError, setPrSummaryError] = useState("");
   const [prSummaryCopied, setPrSummaryCopied] = useState(false);
+  const [copiedRemediationIdx, setCopiedRemediationIdx] = useState(null);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
 
   // Background pre-fetch PR Summary & AI Remediation as soon as analysis ID is ready
@@ -810,26 +811,44 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
                     <p className="text-xs text-slate-200 leading-relaxed">{rem.recommendation}</p>
                   </div>
 
-                  {/* Side by side code or corrected code block */}
+                  {/* Side by side code diff comparison viewer */}
                   <div className="grid gap-3 lg:grid-cols-2">
                     {rem.original_code && (
-                      <div className="rounded-lg border border-rose-500/20 bg-rose-950/20 p-3">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-rose-400 mb-1.5 flex items-center gap-1">
-                          <CircleAlert size={11} />
-                          Original Vulnerable Code
-                        </p>
-                        <pre className="overflow-x-auto font-mono text-xs text-rose-200 p-2 rounded bg-slate-950/60">
+                      <div className="rounded-xl border border-rose-500/30 bg-gradient-to-b from-rose-950/40 to-slate-950/80 p-3.5 shadow-sm">
+                        <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-rose-500/20">
+                          <p className="text-[11px] font-bold uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
+                            <CircleAlert size={13} className="text-rose-400" />
+                            🔴 Original Vulnerable Code
+                          </p>
+                          <span className="font-mono text-[10px] text-rose-400/80 bg-rose-500/10 px-1.5 py-0.5 rounded">Insecure</span>
+                        </div>
+                        <pre className="overflow-x-auto font-mono text-xs text-rose-200/90 p-3 rounded-lg bg-slate-950/80 border border-rose-500/10 leading-relaxed">
                           <code>{rem.original_code}</code>
                         </pre>
                       </div>
                     )}
 
-                    <div className={`rounded-lg border border-emerald-500/20 bg-emerald-950/20 p-3 ${!rem.original_code ? 'lg:col-span-2' : ''}`}>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1.5 flex items-center gap-1">
-                        <CheckCircle2 size={11} />
-                        Corrected Secure Code
-                      </p>
-                      <pre className="overflow-x-auto font-mono text-xs text-emerald-200 p-2 rounded bg-slate-950/60">
+                    <div className={`rounded-xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/40 to-slate-950/80 p-3.5 shadow-sm ${!rem.original_code ? 'lg:col-span-2' : ''}`}>
+                      <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-emerald-500/20">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+                          <CheckCircle2 size={13} className="text-emerald-400" />
+                          🟢 AI-Remediated Secure Code
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!rem.corrected_code) return;
+                            navigator.clipboard.writeText(rem.corrected_code);
+                            setCopiedRemediationIdx(idx);
+                            setTimeout(() => setCopiedRemediationIdx(null), 2500);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/20 border border-emerald-400/30 px-2.5 py-1 text-[11px] font-bold text-emerald-200 hover:bg-emerald-500/30 transition shadow-sm"
+                        >
+                          {copiedRemediationIdx === idx ? <Check size={12} className="text-emerald-300" /> : <Copy size={12} />}
+                          <span>{copiedRemediationIdx === idx ? "Copied Fix!" : "Copy Fix"}</span>
+                        </button>
+                      </div>
+                      <pre className="overflow-x-auto font-mono text-xs text-emerald-200/90 p-3 rounded-lg bg-slate-950/80 border border-emerald-500/10 leading-relaxed">
                         <code>{rem.corrected_code}</code>
                       </pre>
                     </div>
