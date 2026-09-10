@@ -1,4 +1,5 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/$/, "");
+const rawApiUrl = (import.meta.env.VITE_API_BASE_URL || "").trim().replace(/['"]/g, "");
+const API_BASE_URL = (rawApiUrl || "http://localhost:8000").replace(/\/$/, "");
 
 async function parseResponse(response) {
   if (response.status === 204) {
