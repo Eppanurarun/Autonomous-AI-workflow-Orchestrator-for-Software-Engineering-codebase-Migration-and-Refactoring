@@ -157,17 +157,35 @@ class PDFReportService:
             colors.HexColor('#d97706') if health_score >= 60 else colors.HexColor('#e11d48')
         )
 
+        score_p_style = ParagraphStyle(
+            'ScoreBoxRight',
+            parent=self.body_style,
+            fontName='Helvetica-Bold',
+            fontSize=16,
+            leading=20,
+            alignment=TA_RIGHT
+        )
+
+        verdict_p_style = ParagraphStyle(
+            'ScoreBoxLeft',
+            parent=self.body_style,
+            fontName='Helvetica',
+            fontSize=9.5,
+            leading=14,
+            alignment=TA_LEFT
+        )
+
         summary_box_data = [
             [
-                Paragraph(f"<b>Overall Verdict:</b><br/><font size=12 color='{verdict_color.hexval()}'><b>{verdict}</b></font>", self.body_style),
-                Paragraph(f"<font size=20 color='{verdict_color.hexval()}'><b>{health_score}/100</b></font><br/><b>CODE HEALTH SCORE</b>", ParagraphStyle('Score', parent=self.body_style, alignment=TA_RIGHT))
+                Paragraph(f"<font size=8 color='#64748b'><b>OVERALL VERDICT</b></font><br/><font size=11 color='{verdict_color.hexval()}'><b>{verdict}</b></font>", verdict_p_style),
+                Paragraph(f"<font size=18 color='{verdict_color.hexval()}'><b>{health_score}/100</b></font><br/><font size=8 color='#64748b'><b>CODE HEALTH SCORE</b></font>", score_p_style)
             ]
         ]
         summary_table = Table(summary_box_data, colWidths=[340, 200])
         summary_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8fafc')),
             ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#cbd5e1')),
-            ('PADDING', (0, 0), (-1, -1), 12),
+            ('PADDING', (0, 0), (-1, -1), 10),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ]))
         elements.append(summary_table)
