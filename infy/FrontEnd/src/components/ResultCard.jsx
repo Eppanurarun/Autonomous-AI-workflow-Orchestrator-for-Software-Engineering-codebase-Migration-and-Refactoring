@@ -40,24 +40,28 @@ export default function ResultCard({ result, error }) {
 
   // Background pre-fetch PR Summary & AI Remediation as soon as analysis ID is ready
   useEffect(() => {
+    // Reset states for new analysis submission
+    setRemediationResult(null);
+    setRemediationLoading(false);
+    setRemediationError("");
+    setPrSummaryResult(null);
+    setPrSummaryLoading(false);
+    setPrSummaryError("");
+
     const id = result?.analysis_id || result?.analysisId || result?.id;
     if (!id || id === "—") return;
 
-    if (!prSummaryResult && !prSummaryLoading) {
-      setPrSummaryLoading(true);
-      getPRSummary(id)
-        .then((data) => setPrSummaryResult(data))
-        .catch((err) => setPrSummaryError(err.message || "Failed to load summary"))
-        .finally(() => setPrSummaryLoading(false));
-    }
+    setPrSummaryLoading(true);
+    getPRSummary(id)
+      .then((data) => setPrSummaryResult(data))
+      .catch((err) => setPrSummaryError(err.message || "Failed to load summary"))
+      .finally(() => setPrSummaryLoading(false));
 
-    if (!remediationResult && !remediationLoading) {
-      setRemediationLoading(true);
-      generateRemediation(id)
-        .then((data) => setRemediationResult(data))
-        .catch((err) => setRemediationError(err.message || "Failed to load remediation"))
-        .finally(() => setRemediationLoading(false));
-    }
+    setRemediationLoading(true);
+    generateRemediation(id)
+      .then((data) => setRemediationResult(data))
+      .catch((err) => setRemediationError(err.message || "Failed to load remediation"))
+      .finally(() => setRemediationLoading(false));
   }, [result]);
 
   if (error) {

@@ -177,7 +177,10 @@ export default function App() {
   const [authUser, setAuthUser] = useState(() => getAuthUser());
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
-  const navigate = (page) => setActivePage(page);
+  const navigate = (page) => {
+    setActiveAnalysis(null);
+    setActivePage(page);
+  };
 
   const handleSelectAnalysis = (analysis) => {
     setActiveAnalysis(analysis);
