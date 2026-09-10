@@ -129,6 +129,22 @@ class ConversationalAssistantAgent:
 
         # Step 4: Fallback deterministic guidance grounded in RAG KB
         query_lower = query.lower()
+
+        # Off-topic guardrail check
+        off_topic_keywords = [
+            "capital of", "capital", "weather", "temperature", "president",
+            "prime minister", "cricket", "football", "recipe", "movie", "song", "joke"
+        ]
+        if any(keyword in query_lower for keyword in off_topic_keywords):
+            fallback_text = (
+                f"I am your **CodeGuard AI Assistant**, specialized exclusively in **{language.capitalize()}** code quality, OWASP security analysis, and software architecture.\n\n"
+                f"I don't answer general trivia or off-topic questions (like geography or weather). Feel free to ask me anything about:\n"
+                f"- **Vulnerability Remediation** (e.g. *\"How do I fix SQL injection?\"*)\n"
+                f"- **Code Refactoring & Quality** (e.g. *\"How do I improve this code?\"*)\n"
+                f"- **OWASP Security Guidelines** (e.g. *\"How do I store API keys safely?\"*)"
+            )
+            return ChatResponse(response=fallback_text, sources=[])
+
         if any(w in query_lower for w in ["improve", "refactor", "optimize", "clean code", "better code", "fix code", "how to improve", "how to fix"]):
             if analysis_id:
                 analysis_data = storage_service.get_analysis(analysis_id)
