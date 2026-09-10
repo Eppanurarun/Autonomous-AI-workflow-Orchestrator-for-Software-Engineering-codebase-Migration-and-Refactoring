@@ -150,6 +150,7 @@ export default function CodeReview({ onNavigate, initialAnalysis }) {
             <CodeEditor
               code={code}
               language={language || "python"}
+              fileName={fileName}
               onChange={(value) => {
                 setCode(value);
                 setResult(null);
