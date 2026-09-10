@@ -128,7 +128,25 @@ class ConversationalAssistantAgent:
                 pass
 
         # Step 4: Fallback deterministic guidance grounded in RAG KB
-        if rag_results:
+        query_lower = query.lower()
+        if any(w in query_lower for w in ["improve", "refactor", "optimize", "clean code", "better code", "fix code", "how to improve"]):
+            fallback_text = (
+                f"### 🚀 **Code Improvement & Security Checklist ({language.capitalize()})**\n\n"
+                f"Here are the top 4 high-impact ways to improve and secure your codebase:\n\n"
+                f"1. **🛡️ Eliminate Hardcoded Secrets**\n"
+                f"   - *Problem*: Storing credentials directly in code risks leaks via git repositories.\n"
+                f"   - *Fix*: Move passwords and tokens to environment variables (`os.getenv('API_KEY')`).\n\n"
+                f"2. **⚡ Prevent Injection Vulnerabilities**\n"
+                f"   - *Problem*: String concatenation in SQL or OS commands allows attacker code execution.\n"
+                f"   - *Fix*: Use parameterized queries (`cursor.execute('SELECT * FROM users WHERE id=?', (user_id,))`) and `subprocess.run()` without `shell=True`.\n\n"
+                f"3. **🔒 Secure Deserialization & Cryptography**\n"
+                f"   - *Problem*: Using `pickle.loads()` or weak `MD5`/`SHA1` algorithms.\n"
+                f"   - *Fix*: Replace `pickle` with `json` or `pydantic`, and upgrade password hashing to `bcrypt` or `SHA-256`.\n\n"
+                f"4. **📖 Documentation & Maintainability**\n"
+                f"   - *Problem*: Missing docstrings and type annotations.\n"
+                f"   - *Fix*: Add descriptive docstrings and type hints to all top-level functions."
+            )
+        elif rag_results:
             top_doc = rag_results[0]
             fallback_text = (
                 f"### 🛡️ Knowledge Base Guidance: **{top_doc['title']}**\n\n"
