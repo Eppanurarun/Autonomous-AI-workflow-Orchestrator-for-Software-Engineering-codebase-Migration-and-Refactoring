@@ -69,13 +69,17 @@ def generate_pdf_report_from_payload(payload: PRSummaryRequest):
             language = analysis_data.get("language", "python")
             filename = analysis_data.get("filename", filename)
 
+    remediations_raw = storage_service.get_remediations(analysis_id) if analysis_id != "direct" else []
+    if not remediations_raw and findings:
+        remediations_raw = remediation_agent.remediate_batch(findings, code, language)
+
     pdf_bytes = pdf_report_service.generate_pdf(
         analysis_id=analysis_id,
         filename=filename,
         language=language,
         code=code,
         findings=findings,
-        remediations=[],
+        remediations=remediations_raw,
     )
 
     headers = {

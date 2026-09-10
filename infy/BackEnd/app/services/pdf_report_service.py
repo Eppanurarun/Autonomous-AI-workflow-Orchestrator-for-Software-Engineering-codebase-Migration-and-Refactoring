@@ -256,17 +256,27 @@ class PDFReportService:
             elements.append(Paragraph("AI Remediation Details & Corrected Code", self.section_heading))
 
             for idx, rem in enumerate(remediations, 1):
-                title = rem.get("finding_title") or f"Issue on line {rem.get('line')}"
-                line = rem.get("line")
-                corrected_code = rem.get("corrected_code") or ""
-                explanation = rem.get("explanation") or ""
-                why_it_works = rem.get("why_it_works") or ""
+                finding = findings[idx - 1] if (findings and idx <= len(findings)) else None
+
+                if isinstance(rem, dict):
+                    title = rem.get("finding_title") or (finding.title if finding else f"Issue #{idx}")
+                    line = rem.get("line") or (finding.line if finding else "?")
+                    corrected_code = rem.get("corrected_code") or ""
+                    explanation = rem.get("explanation") or (finding.description if finding else "")
+                    why_it_works = rem.get("why_it_works") or rem.get("recommendation") or (finding.recommendation if finding else "")
+                else:
+                    title = getattr(rem, "finding_title", None) or (finding.title if finding else f"Issue #{idx}")
+                    line = getattr(rem, "line", None) or (finding.line if finding else "?")
+                    corrected_code = getattr(rem, "corrected_code", "") or ""
+                    explanation = getattr(rem, "explanation", "") or (finding.description if finding else "")
+                    why_it_works = getattr(rem, "why_it_works", "") or getattr(rem, "recommendation", "") or (finding.recommendation if finding else "")
 
                 rem_block = []
                 rem_block.append(Paragraph(f"<b>Finding #{idx}: {title} (Line {line})</b>", ParagraphStyle('RemTitle', parent=self.body_style, fontName='Helvetica-Bold', fontSize=10, textColor=colors.HexColor('#0f172a'))))
                 rem_block.append(Spacer(1, 4))
-                rem_block.append(Paragraph(f"<b>Explanation:</b> {explanation}", self.body_style))
-                rem_block.append(Spacer(1, 3))
+                if explanation:
+                    rem_block.append(Paragraph(f"<b>Explanation:</b> {explanation}", self.body_style))
+                    rem_block.append(Spacer(1, 3))
 
                 if corrected_code:
                     code_p = Paragraph(f"<font fontName='Courier' size=8>{corrected_code.replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br/>')}</font>", self.code_style)
