@@ -21,10 +21,11 @@ import {
   ListOrdered,
   Download,
   FileCode2,
-  ArrowRight
+  ArrowRight,
+  Lock
 } from "lucide-react";
 
-export default function ResultCard({ result, error }) {
+export default function ResultCard({ result, error, authUser, onOpenAuth }) {
   const [activeTab, setActiveTab] = useState("findings"); // 'findings' | 'summary' | 'remediation'
   const [activeFilter, setActiveFilter] = useState("all");
 
@@ -370,10 +371,66 @@ export default function ResultCard({ result, error }) {
       )}
 
       {/* ==============================================
-          MAIN INTERACTIVE NAVIGATION TAB BAR
-          (Allows in-place switching without scrolling!)
+          AUTHENTICATION GATE: DETAILED FINDINGS & AI TOOLS
       =============================================== */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-1.5 flex flex-wrap items-center justify-between gap-2">
+      {!authUser ? (
+        <div className="relative overflow-hidden rounded-3xl border border-cyan-400/30 bg-gradient-to-br from-slate-900/95 via-slate-950 to-indigo-950/90 p-8 shadow-2xl text-center">
+          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" />
+
+          <div className="relative max-w-xl mx-auto space-y-4">
+            <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-cyan-400/15 border border-cyan-400/30 text-cyan-300 shadow-glow">
+              <Lock size={26} />
+            </div>
+
+            <h3 className="text-xl font-extrabold text-white sm:text-2xl">
+              Unlock Detailed Inspection & AI Remediation
+            </h3>
+
+            <p className="text-xs leading-5 text-slate-300 sm:text-sm">
+              Your initial code scan is complete! Sign in or create a free account to unlock line-by-line vulnerability diagnostics, PR review summary, AI refactoring roadmap, and interactive code chat.
+            </p>
+
+            <div className="grid gap-2.5 text-left text-xs sm:grid-cols-2 pt-2">
+              <div className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 p-3 text-slate-200">
+                <ShieldAlert size={16} className="text-cyan-400 shrink-0" />
+                <span>Line-by-Line Security Diagnostics</span>
+              </div>
+              <div className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 p-3 text-slate-200">
+                <FileText size={16} className="text-indigo-400 shrink-0" />
+                <span>PR Summary & PDF Export</span>
+              </div>
+              <div className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 p-3 text-slate-200">
+                <Sparkles size={16} className="text-emerald-400 shrink-0" />
+                <span>AI Remediation Code Fixes</span>
+              </div>
+              <div className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/60 p-3 text-slate-200">
+                <Bot size={16} className="text-purple-400 shrink-0" />
+                <span>Interactive AI Code Assistant</span>
+              </div>
+            </div>
+
+            <div className="pt-4">
+              {onOpenAuth && (
+                <button
+                  type="button"
+                  onClick={onOpenAuth}
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-300 to-blue-500 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-glow transition hover:brightness-110"
+                >
+                  <span>Sign In / Sign Up to Unlock Details</span>
+                  <ArrowRight size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* ==============================================
+              MAIN INTERACTIVE NAVIGATION TAB BAR
+              (Allows in-place switching without scrolling!)
+          =============================================== */}
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-1.5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-1.5">
           <button
             type="button"
@@ -787,6 +844,8 @@ export default function ResultCard({ result, error }) {
         isOpen={isAssistantOpen}
         onClose={() => setIsAssistantOpen(false)}
       />
+        </>
+      )}
     </div>
   );
 }

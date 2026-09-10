@@ -250,6 +250,8 @@ export default function App() {
           key={activeAnalysis ? (activeAnalysis.analysis_id || activeAnalysis.id || "existing") : "new-inspection"}
           onNavigate={navigate}
           initialAnalysis={activeAnalysis}
+          authUser={authUser}
+          onOpenAuth={() => setIsAuthOpen(true)}
         />
       )}
       {activePage === "history" && (
