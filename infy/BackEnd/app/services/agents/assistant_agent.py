@@ -213,45 +213,32 @@ class ConversationalAssistantAgent:
 
                     return ChatResponse(response=fallback_text, sources=rag_sources)
 
-                # Query type B1: Specific inquiry for "high severity" / "critical" / "major"
-                is_high_sec_query = any(k in query_lower for k in ["high severity", "critical", "major vulnerability", "major issue"])
-                if is_high_sec_query:
-                    high_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["high", "critical"]]
-                    if high_findings:
-                        findings_formatted = []
-                        for idx, f in enumerate(high_findings[:5], 1):
-                            line = f.get("line", "?")
-                            sev = (f.get("severity") or "high").upper()
-                            title = f.get("title", "Issue")
-                            desc = f.get("description", "")
-                            rec = f.get("recommendation") or f.get("description") or "Follow OWASP secure coding guidelines and separate credentials into environment variables."
-                            findings_formatted.append(
-                                f"#### {idx}. **{title}** (Line {line} • `{sev}`)\n"
-                                f"- **Problem**: {desc}\n"
-                                f"- **How to Solve**: {rec}\n"
-                            )
-                        findings_str = "\n".join(findings_formatted)
+                # Specific severity query detection
+                is_high_sec = any(k in query_lower for k in ["high severity", "critical", "major vulnerability", "major issue"])
+                is_med_sec = any(k in query_lower for k in ["medium severity", "medium issue", "medium vulnerability", "medium", "moderate"])
+                is_low_sec = any(k in query_lower for k in ["low severity", "low issue", "code smell", "code smells", "minor"])
 
-                        fallback_text = (
-                            f"### 🚨 **High Severity Vulnerability Remediation for `{filename}`**\n\n"
-                            f"Showing **{len(high_findings)} High Severity risks** detected in your scanned file:\n\n"
-                            f"{findings_str}\n"
-                            f"💡 *Action Needed*: Review the **AI Remediation Roadmap** tab for 1-click refactored code snippets."
-                        )
-                    else:
-                        fallback_text = f"🎉 Great news! No High Severity vulnerabilities were detected in `{filename}`."
+                if is_high_sec:
+                    target_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["high", "critical"]]
+                    header_title = "🚨 High Severity Vulnerability Remediation"
+                elif is_med_sec:
+                    target_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["medium", "moderate"]]
+                    header_title = "⚠️ Medium Severity Vulnerability Remediation"
+                elif is_low_sec:
+                    target_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["low", "info"]]
+                    header_title = "🔍 Low Severity & Code Smell Remediation"
+                else:
+                    target_findings = sorted_actionable
+                    header_title = "🛡️ Diagnostic Analysis & Solutions"
 
-                    return ChatResponse(response=fallback_text, sources=rag_sources)
-
-                # Query type B2: All findings & diagnostic inquiry ("what are all findings", "issues", "how to solve", "fix", etc.)
-                if total_findings > 0:
+                if target_findings:
                     findings_formatted = []
-                    for idx, f in enumerate(sorted_actionable[:5], 1):
+                    for idx, f in enumerate(target_findings[:5], 1):
                         line = f.get("line", "?")
                         sev = (f.get("severity") or "low").upper()
                         title = f.get("title", "Issue")
                         desc = f.get("description", "")
-                        rec = f.get("recommendation") or f.get("description") or "Follow OWASP secure coding guidelines and sanitize untrusted inputs."
+                        rec = f.get("recommendation") or f.get("description") or f"Follow OWASP secure coding guidelines for {display_lang}."
                         findings_formatted.append(
                             f"#### {idx}. **{title}** (Line {line} • `{sev}`)\n"
                             f"- **Problem**: {desc}\n"
@@ -260,13 +247,14 @@ class ConversationalAssistantAgent:
                     findings_str = "\n".join(findings_formatted)
 
                     fallback_text = (
-                        f"### 🛡️ **Diagnostic Analysis & Solutions for `{filename}`**\n\n"
-                        f"Found **{total_findings} issues** ({high_count} High, {med_count} Medium, {low_count} Low):\n\n"
+                        f"### {header_title} for `{filename}`\n\n"
+                        f"Showing **{len(target_findings)} matching items** ({high_count} High, {med_count} Medium, {low_count} Low total):\n\n"
                         f"{findings_str}\n"
                         f"💡 *Action Item*: Check the **AI Remediation Roadmap** tab for 1-click refactored code snippets."
                     )
                 else:
-                    fallback_text = f"🎉 Great news! No security vulnerabilities or code smells were flagged in your scanned file (`{filename}`)."
+                    matching_label = "High" if is_high_sec else "Medium" if is_med_sec else "Low" if is_low_sec else ""
+                    fallback_text = f"🎉 Great news! No {matching_label} Severity issues were flagged in your scanned file (`{filename}`)."
 
                 return ChatResponse(response=fallback_text, sources=rag_sources)
 
