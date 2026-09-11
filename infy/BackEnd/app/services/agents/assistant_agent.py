@@ -67,6 +67,22 @@ class ConversationalAssistantAgent:
                 sources=[],
             )
 
+        # Step 0.5: Off-topic guardrail check
+        query_lower = query.strip().lower()
+        off_topic_keywords = [
+            "capital of", "capital", "weather", "temperature", "president",
+            "prime minister", "cricket", "football", "recipe", "movie", "song", "joke"
+        ]
+        if any(keyword in query_lower for keyword in off_topic_keywords):
+            fallback_text = (
+                f"I am your **CodeGuard AI Assistant**, specialized in multi-language code quality (**Python, Java, JavaScript, TypeScript, C++, Go, HTML**) and OWASP security analysis.\n\n"
+                f"I don't answer general trivia or off-topic questions (like geography or weather). Feel free to ask me anything about:\n"
+                f"- **Vulnerability Remediation** (e.g. *\"How do I fix SQL injection in {display_lang}?\"*)\n"
+                f"- **Code Refactoring & Quality** (e.g. *\"How do I improve this code?\"*)\n"
+                f"- **OWASP Security Guidelines** (e.g. *\"How do I store API keys safely?\"*)"
+            )
+            return ChatResponse(response=fallback_text, sources=[])
+
         # Step 1: Fetch RAG context
         rag_results = self.rag_service.query(
             query_text=query,
