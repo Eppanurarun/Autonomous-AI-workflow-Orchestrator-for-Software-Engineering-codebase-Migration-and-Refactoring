@@ -183,6 +183,13 @@ class ConversationalAssistantAgent:
                 low_count = sum(1 for f in actionable if str(f.get("severity", "")).lower() == "low")
                 filename = analysis_data.get("filename") or (f"code.{language}")
 
+                # Sort actionable findings by severity weight (High -> Medium -> Low)
+                severity_order = {"high": 1, "critical": 1, "medium": 2, "low": 3}
+                sorted_actionable = sorted(
+                    actionable,
+                    key=lambda x: severity_order.get(str(x.get("severity", "")).lower(), 4)
+                )
+
                 # Query type A: "how many findings", "total issues", "count"
                 if any(k in query_lower for k in ["how many", "count", "number of", "how many findings", "total findings", "findings found", "many findings"]):
                     fallback_text = (
@@ -193,8 +200,8 @@ class ConversationalAssistantAgent:
                         f"- 🔍 **Low / Code Smells**: {low_count}\n\n"
                     )
                     if total_findings > 0:
-                        fallback_text += "#### **Detected Findings List**:\n"
-                        for idx, f in enumerate(actionable[:5], 1):
+                        fallback_text += "#### **Top Prioritized Findings List**:\n"
+                        for idx, f in enumerate(sorted_actionable[:5], 1):
                             line = f.get("line", "?")
                             sev = (f.get("severity") or "low").upper()
                             title = f.get("title", "Issue")
@@ -206,11 +213,41 @@ class ConversationalAssistantAgent:
 
                     return ChatResponse(response=fallback_text, sources=rag_sources)
 
-                # Query type B: "how to solve", "high severity", "issue", "what is the issue", "fix"
-                if any(k in query_lower for k in ["high severity", "issue", "issues", "major", "vulnerability", "vulnerabilities", "problem", "what is", "how to solve", "how to fix", "remediate", "detail", "details", "improve", "refactor"]):
+                # Query type B1: Specific inquiry for "high severity" / "critical" / "major"
+                is_high_sec_query = any(k in query_lower for k in ["high severity", "critical", "major vulnerability", "major issue"])
+                if is_high_sec_query:
+                    high_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["high", "critical"]]
+                    if high_findings:
+                        findings_formatted = []
+                        for idx, f in enumerate(high_findings[:5], 1):
+                            line = f.get("line", "?")
+                            sev = (f.get("severity") or "high").upper()
+                            title = f.get("title", "Issue")
+                            desc = f.get("description", "")
+                            rec = f.get("recommendation") or f.get("description") or "Follow OWASP secure coding guidelines and separate credentials into environment variables."
+                            findings_formatted.append(
+                                f"#### {idx}. **{title}** (Line {line} • `{sev}`)\n"
+                                f"- **Problem**: {desc}\n"
+                                f"- **How to Solve**: {rec}\n"
+                            )
+                        findings_str = "\n".join(findings_formatted)
+
+                        fallback_text = (
+                            f"### 🚨 **High Severity Vulnerability Remediation for `{filename}`**\n\n"
+                            f"Showing **{len(high_findings)} High Severity risks** detected in your scanned file:\n\n"
+                            f"{findings_str}\n"
+                            f"💡 *Action Needed*: Review the **AI Remediation Roadmap** tab for 1-click refactored code snippets."
+                        )
+                    else:
+                        fallback_text = f"🎉 Great news! No High Severity vulnerabilities were detected in `{filename}`."
+
+                    return ChatResponse(response=fallback_text, sources=rag_sources)
+
+                # Query type B2: General "how to solve", "issue", "what is the issue", "fix"
+                if any(k in query_lower for k in ["issue", "issues", "vulnerability", "vulnerabilities", "problem", "what is", "how to solve", "how to fix", "remediate", "detail", "details", "improve", "refactor"]):
                     if total_findings > 0:
                         findings_formatted = []
-                        for idx, f in enumerate(actionable[:5], 1):
+                        for idx, f in enumerate(sorted_actionable[:5], 1):
                             line = f.get("line", "?")
                             sev = (f.get("severity") or "low").upper()
                             title = f.get("title", "Issue")
