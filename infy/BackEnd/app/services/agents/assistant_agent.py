@@ -30,6 +30,112 @@ class ConversationalAssistantAgent:
             except Exception:
                 self.client = None
 
+    @staticmethod
+    def _generate_code_fix_snippet(title: str, description: str, language: str, line: Any) -> str:
+        lang = (language or "python").lower()
+        title_lower = (title or "").lower()
+        desc_lower = (description or "").lower()
+
+        if "secret" in title_lower or "credential" in title_lower or "hardcoded" in title_lower:
+            if lang == "java":
+                return (
+                    "```java\n"
+                    "// Secure Refactored Code: Load credentials from Environment Variables\n"
+                    "public class SecurityConfig {\n"
+                    "    public static final String DB_PASSWORD = System.getenv(\"DB_PASSWORD\");\n"
+                    "    public static final String API_KEY = System.getenv(\"API_KEY\");\n"
+                    "    public static final String JWT_SECRET = System.getenv(\"JWT_SECRET\");\n"
+                    "}\n"
+                    "```"
+                )
+            elif lang == "python":
+                return (
+                    "```python\n"
+                    "# Secure Refactored Code: Load credentials from Environment Variables\n"
+                    "import os\n\n"
+                    "DB_PASSWORD = os.getenv('DB_PASSWORD')\n"
+                    "API_KEY = os.getenv('API_KEY')\n"
+                    "JWT_SECRET = os.getenv('JWT_SECRET')\n"
+                    "```"
+                )
+            else:
+                return (
+                    "```javascript\n"
+                    "// Secure Refactored Code: Load credentials from environment variables\n"
+                    "const DB_PASSWORD = process.env.DB_PASSWORD;\n"
+                    "const API_KEY = process.env.API_KEY;\n"
+                    "```"
+                )
+
+        if "sql injection" in title_lower or "sql injection" in desc_lower or "query" in title_lower:
+            if lang == "java":
+                return (
+                    "```java\n"
+                    "// Secure Refactored Code: Use PreparedStatement with parameterized placeholders\n"
+                    "String query = \"SELECT * FROM users WHERE username = ? AND status = ?\";\n"
+                    "try (PreparedStatement pstmt = connection.prepareStatement(query)) {\n"
+                    "    pstmt.setString(1, inputUsername);\n"
+                    "    pstmt.setString(2, \"ACTIVE\");\n"
+                    "    ResultSet rs = pstmt.executeQuery();\n"
+                    "}\n"
+                    "```"
+                )
+            elif lang == "python":
+                return (
+                    "```python\n"
+                    "# Secure Refactored Code: Parameterized DB-API Query\n"
+                    "query = \"SELECT * FROM users WHERE username = %s AND status = %s\"\n"
+                    "cursor.execute(query, (input_username, 'ACTIVE'))\n"
+                    "results = cursor.fetchall()\n"
+                    "```"
+                )
+            else:
+                return (
+                    "```javascript\n"
+                    "// Secure Refactored Code: Parameterized query placeholders\n"
+                    "const query = 'SELECT * FROM users WHERE username = ?';\n"
+                    "const [results] = await db.execute(query, [inputUsername]);\n"
+                    "```"
+                )
+
+        if "docstring" in title_lower or "javadoc" in title_lower or "documentation" in title_lower:
+            if lang == "java":
+                return (
+                    "```java\n"
+                    "/**\n"
+                    " * Encapsulates application services and security configurations.\n"
+                    " * \n"
+                    " * @param username Target account username to query.\n"
+                    " * @return User record or null if not found.\n"
+                    " */\n"
+                    "```"
+                )
+            else:
+                return (
+                    "```python\n"
+                    "\"\"\"\n"
+                    "Performs secure user lookup by username.\n\n"
+                    ":param username: Target account username\n"
+                    ":return: User dict or None\n"
+                    "\"\"\"\n"
+                    "```"
+                )
+
+        if "xss" in title_lower or "cross-site" in desc_lower:
+            return (
+                "```html\n"
+                "<!-- Secure Refactored Code: Contextually sanitize untrusted input -->\n"
+                "<div><%= sanitizeHtml(userInput) %></div>\n"
+                "```"
+            )
+
+        return (
+            f"```{lang}\n"
+            f"// Secure Refactored Code Snippet for Line {line}\n"
+            f"// Enforce strict input validation and parameter binding\n"
+            f"```"
+        )
+
     def ask(
         self,
         query: str,
@@ -239,10 +345,12 @@ class ConversationalAssistantAgent:
                         title = f.get("title", "Issue")
                         desc = f.get("description", "")
                         rec = f.get("recommendation") or f.get("description") or f"Follow OWASP secure coding guidelines for {display_lang}."
+                        code_fix = self._generate_code_fix_snippet(title, desc, language, line)
                         findings_formatted.append(
                             f"#### {idx}. **{title}** (Line {line} • `{sev}`)\n"
                             f"- **Problem**: {desc}\n"
-                            f"- **How to Fix**: {rec}\n"
+                            f"- **How to Fix**: {rec}\n\n"
+                            f"**Refactored Secure Code Fix**:\n{code_fix}\n"
                         )
                     findings_str = "\n".join(findings_formatted)
 
