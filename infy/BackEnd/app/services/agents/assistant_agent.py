@@ -243,33 +243,32 @@ class ConversationalAssistantAgent:
 
                     return ChatResponse(response=fallback_text, sources=rag_sources)
 
-                # Query type B2: General "how to solve", "issue", "what is the issue", "fix"
-                if any(k in query_lower for k in ["issue", "issues", "vulnerability", "vulnerabilities", "problem", "what is", "how to solve", "how to fix", "remediate", "detail", "details", "improve", "refactor"]):
-                    if total_findings > 0:
-                        findings_formatted = []
-                        for idx, f in enumerate(sorted_actionable[:5], 1):
-                            line = f.get("line", "?")
-                            sev = (f.get("severity") or "low").upper()
-                            title = f.get("title", "Issue")
-                            desc = f.get("description", "")
-                            rec = f.get("recommendation") or f.get("description") or "Follow OWASP secure coding guidelines and sanitize untrusted inputs."
-                            findings_formatted.append(
-                                f"#### {idx}. **{title}** (Line {line} • `{sev}`)\n"
-                                f"- **Problem**: {desc}\n"
-                                f"- **How to Fix**: {rec}\n"
-                            )
-                        findings_str = "\n".join(findings_formatted)
-
-                        fallback_text = (
-                            f"### 🛡️ **Diagnostic Analysis & Solutions for `{filename}`**\n\n"
-                            f"Found **{total_findings} issues** ({high_count} High, {med_count} Medium, {low_count} Low):\n\n"
-                            f"{findings_str}\n"
-                            f"💡 *Action Item*: Check the **AI Remediation Roadmap** tab for 1-click refactored code snippets."
+                # Query type B2: All findings & diagnostic inquiry ("what are all findings", "issues", "how to solve", "fix", etc.)
+                if total_findings > 0:
+                    findings_formatted = []
+                    for idx, f in enumerate(sorted_actionable[:5], 1):
+                        line = f.get("line", "?")
+                        sev = (f.get("severity") or "low").upper()
+                        title = f.get("title", "Issue")
+                        desc = f.get("description", "")
+                        rec = f.get("recommendation") or f.get("description") or "Follow OWASP secure coding guidelines and sanitize untrusted inputs."
+                        findings_formatted.append(
+                            f"#### {idx}. **{title}** (Line {line} • `{sev}`)\n"
+                            f"- **Problem**: {desc}\n"
+                            f"- **How to Fix**: {rec}\n"
                         )
-                    else:
-                        fallback_text = f"No security vulnerabilities or code smells were flagged in your scanned file (`{filename}`)."
+                    findings_str = "\n".join(findings_formatted)
 
-                    return ChatResponse(response=fallback_text, sources=rag_sources)
+                    fallback_text = (
+                        f"### 🛡️ **Diagnostic Analysis & Solutions for `{filename}`**\n\n"
+                        f"Found **{total_findings} issues** ({high_count} High, {med_count} Medium, {low_count} Low):\n\n"
+                        f"{findings_str}\n"
+                        f"💡 *Action Item*: Check the **AI Remediation Roadmap** tab for 1-click refactored code snippets."
+                    )
+                else:
+                    fallback_text = f"🎉 Great news! No security vulnerabilities or code smells were flagged in your scanned file (`{filename}`)."
+
+                return ChatResponse(response=fallback_text, sources=rag_sources)
 
         if any(w in query_lower for w in ["improve", "refactor", "optimize", "clean code", "better code", "fix code", "how to improve", "how to fix"]):
             fallback_text = (
