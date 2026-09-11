@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, Send, Bot, User, Sparkles, X, BookOpen, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { MessageSquare, Send, Bot, User, Sparkles, X, BookOpen, Trash2, ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
 import { sendChatMessage } from "../services/api";
 
 const SUGGESTED_PROMPTS = [
@@ -8,6 +8,60 @@ const SUGGESTED_PROMPTS = [
   "What is the best way to prevent Cross-Site Scripting (XSS)?",
   "How can I reduce cyclomatic complexity in large functions?",
 ];
+
+function MessageContent({ content }) {
+  const [copiedCode, setCopiedCode] = useState(null);
+
+  if (!content) return null;
+
+  const parts = content.split(/(```[\s\S]*?```)/g);
+
+  return (
+    <div className="space-y-2 font-sans text-xs leading-relaxed">
+      {parts.map((part, index) => {
+        if (part.startsWith("```") && part.endsWith("```")) {
+          const firstLineEnd = part.indexOf("\n");
+          let codeLang = "code";
+          let codeText = part.slice(3, -3);
+          if (firstLineEnd !== -1 && firstLineEnd < 20) {
+            codeLang = part.slice(3, firstLineEnd).trim() || "code";
+            codeText = part.slice(firstLineEnd + 1, -3);
+          }
+          const isCopied = copiedCode === index;
+
+          return (
+            <div key={index} className="my-2 overflow-hidden rounded-xl border border-slate-700/80 bg-slate-950/90 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900/80 px-3 py-1.5 font-mono text-[10px] text-slate-400">
+                <span className="uppercase text-cyan-400 font-bold">{codeLang}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(codeText.trim());
+                    setCopiedCode(index);
+                    setTimeout(() => setCopiedCode(null), 2000);
+                  }}
+                  className="inline-flex items-center gap-1 rounded bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-200 hover:bg-slate-700 transition"
+                >
+                  {isCopied ? <Check size={11} className="text-emerald-300" /> : <Copy size={11} />}
+                  <span>{isCopied ? "Copied!" : "Copy"}</span>
+                </button>
+              </div>
+              <pre className="overflow-x-auto p-3 font-mono text-[11px] text-slate-200 leading-relaxed">
+                <code>{codeText.trim()}</code>
+              </pre>
+            </div>
+          );
+        }
+
+        return (
+          <div key={index} className="whitespace-pre-wrap">
+            {part}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function ConversationalAssistant({ analysisId, language = "python", isOpen, onClose }) {
   const [messages, setMessages] = useState([
@@ -151,7 +205,7 @@ export default function ConversationalAssistant({ analysisId, language = "python
                     : "bg-slate-900/90 text-slate-200 border border-slate-800 rounded-tl-none"
                 }`}
               >
-                <div className="whitespace-pre-wrap font-sans">{msg.content}</div>
+                <MessageContent content={msg.content} />
               </div>
 
               {/* RAG Citations */}
@@ -205,7 +259,12 @@ export default function ConversationalAssistant({ analysisId, language = "python
       <div className="border-t border-slate-800/80 bg-slate-900/30 px-4 py-2">
         <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Suggested Questions</p>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
-          {SUGGESTED_PROMPTS.map((prompt, pIdx) => (
+          {(analysisId && analysisId !== "—" ? [
+            "What are all findings in this file?",
+            "How do I fix high severity issues?",
+            "Explain OWASP Top 10 vulnerabilities",
+            "How do I prevent SQL injection?"
+          ] : SUGGESTED_PROMPTS).map((prompt, pIdx) => (
             <button
               key={pIdx}
               type="button"
