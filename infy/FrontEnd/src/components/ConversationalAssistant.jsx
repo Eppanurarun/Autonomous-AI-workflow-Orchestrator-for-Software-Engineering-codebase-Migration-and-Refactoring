@@ -9,6 +9,90 @@ const SUGGESTED_PROMPTS = [
   "How can I reduce cyclomatic complexity in large functions?",
 ];
 
+function parseInlineMarkdown(text) {
+  if (!text) return null;
+  const parts = text.split(/(\*\*[\s\S]+?\*\*|`[^`]+`|\*[^\*]+\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
+      return (
+        <strong key={i} className="font-semibold text-slate-100">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (part.startsWith("`") && part.endsWith("`") && part.length >= 2) {
+      return (
+        <code key={i} className="rounded bg-slate-800/80 px-1.5 py-0.5 font-mono text-[11px] text-cyan-300 border border-slate-700/60">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    if (part.startsWith("*") && part.endsWith("*") && part.length >= 2 && !part.startsWith("**")) {
+      return (
+        <em key={i} className="italic text-slate-300">
+          {part.slice(1, -1)}
+        </em>
+      );
+    }
+    return part;
+  });
+}
+
+function FormattedText({ text }) {
+  if (!text) return null;
+  const lines = text.split("\n");
+  return (
+    <div className="space-y-1">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={idx} className="h-1.5" />;
+        }
+
+        if (trimmed.startsWith("### ")) {
+          return (
+            <h3 key={idx} className="font-bold text-sm text-cyan-300 mt-2 mb-1">
+              {parseInlineMarkdown(trimmed.slice(4))}
+            </h3>
+          );
+        }
+        if (trimmed.startsWith("#### ")) {
+          return (
+            <h4 key={idx} className="font-semibold text-xs text-indigo-300 mt-1.5 mb-0.5">
+              {parseInlineMarkdown(trimmed.slice(5))}
+            </h4>
+          );
+        }
+
+        if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+          return (
+            <div key={idx} className="flex gap-2 pl-2 text-slate-200">
+              <span className="text-cyan-400 font-bold select-none">•</span>
+              <span>{parseInlineMarkdown(trimmed.slice(2))}</span>
+            </div>
+          );
+        }
+
+        const numMatch = trimmed.match(/^(\d+)\.\s+(.*)/);
+        if (numMatch) {
+          return (
+            <div key={idx} className="flex gap-2 pl-2 text-slate-200">
+              <span className="text-cyan-400 font-bold select-none">{numMatch[1]}.</span>
+              <span>{parseInlineMarkdown(numMatch[2])}</span>
+            </div>
+          );
+        }
+
+        return (
+          <p key={idx} className="text-slate-200 leading-relaxed">
+            {parseInlineMarkdown(line)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 function MessageContent({ content }) {
   const [copiedCode, setCopiedCode] = useState(null);
 
@@ -53,11 +137,7 @@ function MessageContent({ content }) {
           );
         }
 
-        return (
-          <div key={index} className="whitespace-pre-wrap">
-            {part}
-          </div>
-        );
+        return <FormattedText key={index} text={part} />;
       })}
     </div>
   );
