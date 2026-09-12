@@ -74,8 +74,7 @@ class ConversationalAssistantAgent:
             elif lang == "python":
                 return (
                     f"```python\n"
-                    f"# Line {line} Fix: Load '{v_name}' from Environment Variable\n"
-                    f"import os\n"
+                    f"# Line {line} Fix: Load '{v_name}' from Environment Variable (Ensure 'import os' is at top of file)\n"
                     f"{v_name} = os.getenv('{v_name}')\n"
                     f"```"
                 )
