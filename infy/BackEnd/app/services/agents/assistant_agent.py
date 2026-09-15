@@ -52,7 +52,39 @@ class ConversationalAssistantAgent:
         return result
 
     @staticmethod
-    def _generate_code_fix_snippet(title: str, description: str, language: str, line: Any) -> str:
+    def _extract_variable_name(description: str, title: str, line: Any, code_snippet: Optional[str] = None) -> str:
+        import re
+        blacklist = {"or", "and", "in", "is", "not", "key", "secret", "variable", "field", "password", "credential", "token", "a", "an", "the", "var"}
+
+        # 1. Inspect actual line in code snippet if provided
+        if code_snippet and str(line).isdigit():
+            line_idx = int(line)
+            lines = code_snippet.splitlines()
+            if 1 <= line_idx <= len(lines):
+                target_line = lines[line_idx - 1].strip()
+                assign_match = re.search(r"([A-Za-z_][A-Za-z0-9_.]*)\s*=", target_line)
+                if assign_match:
+                    cand = assign_match.group(1).strip()
+                    if cand.lower() not in blacklist:
+                        return cand
+
+        # 2. Inspect description for quoted names like 'DB_PASSWORD' or 'app.secret_key'
+        quoted = re.findall(r"['\"]([A-Za-z_][A-Za-z0-9_.]*)['\"]", description)
+        for cand in quoted:
+            if cand.lower() not in blacklist and len(cand) > 1:
+                return cand
+
+        # 3. Match 'variable DB_PASSWORD' or 'field DB_PASSWORD'
+        match = re.search(r"(?:variable|field|constant|property|key|secret)\s+(['\"]?)([A-Za-z_][A-Za-z0-9_.]*)\1", description, re.IGNORECASE)
+        if match:
+            cand = match.group(2).strip()
+            if cand.lower() not in blacklist:
+                return cand
+
+        return "SECRET_KEY"
+
+    @staticmethod
+    def _generate_code_fix_snippet(title: str, description: str, language: str, line: Any, code_snippet: Optional[str] = None) -> str:
         import re
         lang = (language or "python").lower()
         title_lower = (title or "").lower()
@@ -62,13 +94,19 @@ class ConversationalAssistantAgent:
         comment_prefix = "#" if lang == "python" else "<!--" if lang in ["html", "xml"] else "//"
         comment_suffix = " -->" if lang in ["html", "xml"] else ""
 
-        # Extract variable name if mentioned
-        var_match = re.search(r"(?:variable|field|key|secret|token|credential|parameter)\s*['\"]?([A-Za-z0-9_]+)['\"]?", desc_lower, re.IGNORECASE)
-        var_name = var_match.group(1) if var_match else None
+        # Extract variable name cleanly
+        v_name = ConversationalAssistantAgent._extract_variable_name(description, title, line, code_snippet)
 
         # 1. Hardcoded Secrets
         if "secret" in title_lower or "credential" in title_lower or "hardcoded" in title_lower:
-            v_name = var_name or "SECRET_KEY"
+            if v_name == "app.secret_key" or "secret_key" in v_name.lower():
+                if lang == "python":
+                    return (
+                        f"```python\n"
+                        f"# Line {line} Fix: Load 'app.secret_key' from Environment Variable (Ensure 'import os' is at top of file)\n"
+                        f"app.secret_key = os.getenv('FLASK_SECRET_KEY', os.getenv('SECRET_KEY'))\n"
+                        f"```"
+                    )
             if lang == "java":
                 return (
                     f"```java\n"
@@ -505,7 +543,7 @@ class ConversationalAssistantAgent:
                             desc = f.get("description", "")
                             raw_rec = f.get("recommendation") or f.get("description") or f"Follow OWASP secure coding guidelines for {display_lang}."
                             rec = self._clean_recommendation(raw_rec, language)
-                            code_fix = self._generate_code_fix_snippet(title, desc, language, line)
+                            code_fix = self._generate_code_fix_snippet(title, desc, language, line, analysis_data.get("code"))
                             findings_formatted.append(
                                 f"#### {idx}. **{title}** (Line {line} • `{sev}`)\n"
                                 f"- **Problem**: {desc}\n"
@@ -526,7 +564,103 @@ class ConversationalAssistantAgent:
 
                     return ChatResponse(response=fallback_text, sources=rag_sources)
 
-                # Query type D: Specific question targeting a line number or vulnerability type in the report
+                # Query type D1: Code Explanation / Walkthrough Question ("What does get_user() function do?", "Explain login")
+                is_code_explanation = any(k in query_lower for k in [
+                    "what does", "explain", "how does", "purpose of", "what is the function",
+                    "what do", "walkthrough", "describe", "code logic", "how work", "function do"
+                ])
+
+                if is_code_explanation:
+                    full_code = analysis_data.get("code", "")
+                    target_func = None
+                    for line_str in full_code.splitlines():
+                        if "def " in line_str:
+                            f_name = line_str.split("def ")[1].split("(")[0].strip()
+                            if f_name.lower() in query_lower:
+                                target_func = f_name
+                                break
+
+                    if target_func:
+                        func_lines = []
+                        capturing = False
+                        for line_str in full_code.splitlines():
+                            if f"def {target_func}" in line_str:
+                                capturing = True
+                            elif capturing and line_str.startswith("def "):
+                                break
+                            if capturing:
+                                func_lines.append(line_str)
+                        func_snippet = "\n".join(func_lines)
+
+                        sec_notes = []
+                        if "SELECT" in func_snippet and "+" in func_snippet:
+                            sec_notes.append("- 🚨 **SQL Injection**: Query uses unparameterized string concatenation.")
+                        if "os.system" in func_snippet or "subprocess" in func_snippet:
+                            sec_notes.append("- 🚨 **Command Injection**: Direct shell command execution from input.")
+                        if "pickle.load" in func_snippet or "pickle.loads" in func_snippet:
+                            sec_notes.append("- 🚨 **Insecure Deserialization**: Deserializing untrusted pickle payload.")
+                        if "WHERE id =" in func_snippet or "WHERE id = ?" in func_snippet or "user_id" in func_snippet:
+                            sec_notes.append("- ⚠️ **Access Control (IDOR)**: Endpoint queries records by ID without checking user ownership/authentication.")
+
+                        sec_str = "\n".join(sec_notes) if sec_notes else "- No critical security flags detected on this function body."
+
+                        fallback_text = (
+                            f"### 📖 **Function Code Walkthrough: `{target_func}()`**\n\n"
+                            f"**In Scanned File**: `{filename}`\n\n"
+                            f"```python\n{func_snippet}\n```\n\n"
+                            f"#### **Function Purpose & Logic**:\n"
+                            f"1. **Endpoint Handler**: `{target_func}()` processes incoming HTTP request parameters.\n"
+                            f"2. **Data Operations**: Performs internal logic or database operations for requested records.\n"
+                            f"3. **Return Payload**: Returns JSON data or appropriate HTTP status codes.\n\n"
+                            f"#### **Security & Quality Observations**:\n"
+                            f"{sec_str}"
+                        )
+                        return ChatResponse(response=fallback_text, sources=rag_sources)
+
+                # Query type D2: Runtime Error / Crash Inspection Question ("What runtime error will occur?", "will it crash")
+                is_runtime_error = any(k in query_lower for k in [
+                    "runtime error", "runtime-error", "crash", "exception", "typeerror",
+                    "nameerror", "syntaxerror", "will it crash", "error on line", "runtime failure"
+                ])
+
+                if is_runtime_error:
+                    full_code = analysis_data.get("code", "")
+                    runtime_findings = []
+
+                    if "pickle.load(" in full_code and "open(" not in full_code:
+                        for l_idx, l_str in enumerate(full_code.splitlines(), 1):
+                            if "pickle.load(" in l_str:
+                                runtime_findings.append(
+                                    f"#### **Line {l_idx}: `TypeError` on `pickle.load()`**\n"
+                                    f"- **Vulnerable Line**: `{l_str.strip()}`\n"
+                                    f"- **Runtime Error**: `pickle.load()` expects a file-like object with a `.read()` method. Passing raw byte/string data (e.g., `request.get_data()`) raises `TypeError: file must have a 'read' and 'readline' attribute!`.\n"
+                                    f"- **Correct Fix**: Use `pickle.loads(data)` for byte strings, or replace with `json.loads(data)` for safe JSON handling."
+                                )
+
+                    if "subprocess" in full_code and "shell=True" in full_code:
+                        for l_idx, l_str in enumerate(full_code.splitlines(), 1):
+                            if "subprocess" in l_str or "os.system" in l_str:
+                                runtime_findings.append(
+                                    f"#### **Line {l_idx}: `subprocess.CalledProcessError`**\n"
+                                    f"- **Vulnerable Line**: `{l_str.strip()}`\n"
+                                    f"- **Runtime Error**: `subprocess.check_output()` will crash with `CalledProcessError` if the executed system shell command returns a non-zero exit code."
+                                )
+
+                    if runtime_findings:
+                        runtime_str = "\n\n".join(runtime_findings)
+                        fallback_text = (
+                            f"### ⚠️ **Runtime Error & Exception Inspection for `{filename}`**\n\n"
+                            f"{runtime_str}\n\n"
+                            f"💡 *Recommendation*: Ensure file stream contracts match function specifications and wrap IO calls in `try...except` blocks."
+                        )
+                    else:
+                        fallback_text = (
+                            f"### ⚠️ **Runtime Error Inspection for `{filename}`**\n\n"
+                            f"No immediate type contract crashes detected. Ensure request parameters and database connections are validated."
+                        )
+                    return ChatResponse(response=fallback_text, sources=rag_sources)
+
+                # Query type D3: Specific question targeting a line number or vulnerability type in the report
                 import re
                 line_match = re.search(r"line\s*(\d+)", query_lower)
                 target_line = line_match.group(1) if line_match else None
@@ -551,7 +685,7 @@ class ConversationalAssistantAgent:
                     m_desc = matched_finding.get("description", "")
                     raw_rec = matched_finding.get("recommendation") or matched_finding.get("description") or ""
                     m_rec = self._clean_recommendation(raw_rec, language)
-                    m_fix = self._generate_code_fix_snippet(m_title, m_desc, language, m_line)
+                    m_fix = self._generate_code_fix_snippet(m_title, m_desc, language, m_line, analysis_data.get("code"))
 
                     fallback_text = (
                         f"### 🛡️ **Targeted Guidance: {m_title}** (Line {m_line} • `{m_sev}`)\n\n"
