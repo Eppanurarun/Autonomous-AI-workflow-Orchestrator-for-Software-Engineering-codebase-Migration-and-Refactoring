@@ -508,6 +508,82 @@ class ConversationalAssistantAgent:
                     else:
                         fallback_text = f"🎉 No high-risk vulnerabilities were found in `{filename}`."
 
+                # Query type B2: Production Readiness Assessment ("Is this code production ready?", "Can I deploy?")
+                is_prod_readiness = any(k in query_lower for k in ["production ready", "can i deploy", "deploy to production", "ready for production", "is this ready"])
+                if is_prod_readiness:
+                    if high_count > 0:
+                        fallback_text = (
+                            f"### 🛑 **Production Readiness Assessment for `{filename}`**\n\n"
+                            f"**Verdict**: **🔴 NOT PRODUCTION READY**\n\n"
+                            f"**Blocking Vulnerabilities**:\n"
+                            f"- Your application contains **{high_count} High Severity vulnerabilities** that allow Remote Code Execution, query manipulation, or secret exposure.\n\n"
+                            f"#### **Required Pre-Deployment Steps**:\n"
+                            f"1. Refactor all High/Critical vulnerabilities in the **AI Remediation Roadmap** tab.\n"
+                            f"2. Separate hardcoded secrets into environment variables (`os.getenv`).\n"
+                            f"3. Re-scan your code to confirm a clean 100/100 Health Score."
+                        )
+                    else:
+                        fallback_text = (
+                            f"### ✅ **Production Readiness Assessment for `{filename}`**\n\n"
+                            f"**Verdict**: **🟢 PRODUCTION READY**\n\n"
+                            f"No high-severity vulnerabilities were detected. Ensure standard TLS and environment configurations are set before deployment."
+                        )
+                    return ChatResponse(response=fallback_text, sources=rag_sources)
+
+                # Query type B3: Unit Test Suite Generation ("How do I write a unit test for this?", "pytest")
+                is_unit_test = any(k in query_lower for k in ["unit test", "write a test", "pytest", "junit", "test case", "how to test"])
+                if is_unit_test:
+                    lang_lower = (language or "python").lower()
+                    if lang_lower == "python":
+                        fallback_text = (
+                            f"### 🧪 **Automated Unit Test Suite for `{filename}`**\n\n"
+                            f"Here is a complete, runnable `pytest` suite for testing your application endpoints:\n\n"
+                            f"```python\n"
+                            f"import pytest\n"
+                            f"from main import app\n\n"
+                            f"@pytest.fixture\n"
+                            f"def client():\n"
+                            f"    app.config['TESTING'] = True\n"
+                            f"    with app.test_client() as client:\n"
+                            f"        yield client\n\n"
+                            f"def test_invalid_login(client):\n"
+                            f"    response = client.post('/login', data={{'username': 'invalid', 'password': 'wrong'}})\n"
+                            f"    assert response.status_code == 401\n"
+                            f"```"
+                        )
+                    else:
+                        fallback_text = (
+                            f"### 🧪 **Automated Unit Test Suite for `{filename}`**\n\n"
+                            f"Here is a JUnit 5 test snippet:\n\n"
+                            f"```java\n"
+                            f"import org.junit.jupiter.api.Test;\n"
+                            f"import static org.junit.jupiter.api.Assertions.*;\n\n"
+                            f"class ApplicationTest {{\n"
+                            f"    @Test\n"
+                            f"    void testSecurityInput() {{\n"
+                            f"        assertNotNull(new SecurityConfig());\n"
+                            f"    }}\n"
+                            f"}}\n"
+                            f"```"
+                        )
+                    return ChatResponse(response=fallback_text, sources=rag_sources)
+
+                # Query type B4: Exploit Payload & Defense Analysis ("' OR '1'='1", "exploit", "payload")
+                is_payload_query = any(k in query_lower for k in ["' or '1'='1", "exploit", "payload", "attack vector", "how attacker exploit"])
+                if is_payload_query:
+                    fallback_text = (
+                        f"### 🛡️ **Vulnerability Exploit & Defense Analysis**\n\n"
+                        f"**Input Example**: `' OR '1'='1`\n\n"
+                        f"#### **How the Attack Works (Unparameterized Query)**:\n"
+                        f"When untrusted input `' OR '1'='1` is concatenated into a raw SQL query string:\n"
+                        f"```sql\n"
+                        f"SELECT * FROM users WHERE username='' OR '1'='1' AND password='...'\n"
+                        f"```\n"
+                        f"The clause `'1'='1'` evaluates to `TRUE`, overriding authentication logic and returning user records.\n\n"
+                        f"#### **Defense (Parameterized Queries)**:\n"
+                        f"With prepared statements (`cursor.execute('SELECT * FROM users WHERE username=%s', (user_input,))`), "
+                        f"the database driver treats `' OR '1'='1` literally as a string literal value rather than executable SQL logic, neutralizing the attack completely."
+                    )
                     return ChatResponse(response=fallback_text, sources=rag_sources)
 
                 # Query type C: Explicit full report request OR specific severity request
