@@ -58,10 +58,15 @@ class ConversationalAssistantAgent:
         title_lower = (title or "").lower()
         desc_lower = (description or "").lower()
 
-        # Extract variable name if mentioned in description or title
+        # Comment syntax helper
+        comment_prefix = "#" if lang == "python" else "<!--" if lang in ["html", "xml"] else "//"
+        comment_suffix = " -->" if lang in ["html", "xml"] else ""
+
+        # Extract variable name if mentioned
         var_match = re.search(r"(?:variable|field|key|secret|token|credential|parameter)\s*['\"]?([A-Za-z0-9_]+)['\"]?", desc_lower, re.IGNORECASE)
         var_name = var_match.group(1) if var_match else None
 
+        # 1. Hardcoded Secrets
         if "secret" in title_lower or "credential" in title_lower or "hardcoded" in title_lower:
             v_name = var_name or "SECRET_KEY"
             if lang == "java":
@@ -86,6 +91,60 @@ class ConversationalAssistantAgent:
                     f"```"
                 )
 
+        # 2. Command Injection
+        if "command" in title_lower or "command injection" in desc_lower or "subprocess" in desc_lower or "os.system" in desc_lower or "exec" in desc_lower:
+            if lang == "java":
+                return (
+                    f"```java\n"
+                    f"// Line {line} Fix: Use ProcessBuilder with argument list (avoid shell execution)\n"
+                    f"ProcessBuilder pb = new ProcessBuilder(\"safe_cmd\", untrustedInput);\n"
+                    f"Process process = pb.start();\n"
+                    f"```"
+                )
+            elif lang == "python":
+                return (
+                    f"```python\n"
+                    f"# Line {line} Fix: Use subprocess.run with argument list (avoid os.system / shell=True)\n"
+                    f"import subprocess\n"
+                    f"subprocess.run([\"safe_cmd\", untrusted_input], check=True)\n"
+                    f"```"
+                )
+            else:
+                return (
+                    f"```javascript\n"
+                    f"// Line {line} Fix: Use execFile with argument array\n"
+                    f"const {{ execFile }} = require('child_process');\n"
+                    f"execFile('safe_cmd', [untrustedInput], (err, stdout) => {{ ... }});\n"
+                    f"```"
+                )
+
+        # 3. Insecure Deserialization
+        if "deserialization" in title_lower or "pickle" in desc_lower or "yaml" in desc_lower or "unserialize" in desc_lower:
+            if lang == "java":
+                return (
+                    f"```java\n"
+                    f"// Line {line} Fix: Replace Java serialization with safe Jackson JSON parsing\n"
+                    f"ObjectMapper mapper = new ObjectMapper();\n"
+                    f"MyData data = mapper.readValue(jsonString, MyData.class);\n"
+                    f"```"
+                )
+            elif lang == "python":
+                return (
+                    f"```python\n"
+                    f"# Line {line} Fix: Replace pickle.load() with safe json.loads() or Pydantic\n"
+                    f"import json\n"
+                    f"data = json.loads(untrusted_json_string)\n"
+                    f"```"
+                )
+            else:
+                return (
+                    f"```javascript\n"
+                    f"// Line {line} Fix: Use JSON.parse() instead of eval() or unsafe deserialization\n"
+                    f"const data = JSON.parse(untrustedString);\n"
+                    f"```"
+                )
+
+        # 4. SQL Injection
         if "sql injection" in title_lower or "sql injection" in desc_lower or "query" in title_lower:
             if lang == "java":
                 return (
@@ -115,6 +174,34 @@ class ConversationalAssistantAgent:
                     f"```"
                 )
 
+        # 5. Weak Hashing / Cryptography
+        if "hash" in title_lower or "md5" in desc_lower or "sha1" in desc_lower or "cryptographic" in title_lower:
+            if lang == "java":
+                return (
+                    f"```java\n"
+                    f"// Line {line} Fix: Use SHA-256 or bcrypt instead of weak MD5/SHA-1\n"
+                    f"MessageDigest md = MessageDigest.getInstance(\"SHA-256\");\n"
+                    f"byte[] digest = md.digest(dataBytes);\n"
+                    f"```"
+                )
+            elif lang == "python":
+                return (
+                    f"```python\n"
+                    f"# Line {line} Fix: Use hashlib.sha256() instead of MD5/SHA1\n"
+                    f"import hashlib\n"
+                    f"secure_hash = hashlib.sha256(data_bytes).hexdigest()\n"
+                    f"```"
+                )
+            else:
+                return (
+                    f"```javascript\n"
+                    f"// Line {line} Fix: Use crypto module with SHA-256\n"
+                    f"const crypto = require('crypto');\n"
+                    f"const hash = crypto.createHash('sha256').update(data).digest('hex');\n"
+                    f"```"
+                )
+
+        # 6. Docstrings / Documentation
         if "docstring" in title_lower or "javadoc" in title_lower or "documentation" in title_lower:
             if lang == "java":
                 return (
@@ -133,6 +220,7 @@ class ConversationalAssistantAgent:
                     f"```"
                 )
 
+        # 7. XSS
         if "xss" in title_lower or "cross-site" in desc_lower:
             return (
                 f"```html\n"
@@ -143,7 +231,7 @@ class ConversationalAssistantAgent:
 
         return (
             f"```{lang}\n"
-            f"// Line {line} Secure Refactored Code Fix\n"
+            f"{comment_prefix} Line {line} Secure Refactored Code Fix{comment_suffix}\n"
             f"```"
         )
 
@@ -327,6 +415,60 @@ class ConversationalAssistantAgent:
                         fallback_text += "\n💡 *Tip*: You can view side-by-side refactored code fixes in the **AI Remediation Roadmap** tab!"
                     else:
                         fallback_text += "🎉 Great news! No vulnerabilities or code smells were flagged in this submission."
+
+                    return ChatResponse(response=fallback_text, sources=rag_sources)
+
+                # Query type B: Comparative risk analysis ("which one", "highest risk", "which is worse", "between", "highest risk in this program")
+                is_comparative = any(k in query_lower for k in [
+                    "highest risk", "most critical", "which one", "which issue", "which vulnerability",
+                    "only one answer", "compare", "which is worse", "poses the highest risk", "highest severity vulnerability"
+                ])
+
+                if is_comparative:
+                    cmd_inj = next((f for f in sorted_actionable if "command" in f.get("title","").lower() or "subprocess" in f.get("description","").lower() or "os.system" in f.get("description","").lower()), None)
+                    deserialization = next((f for f in sorted_actionable if "deserialization" in f.get("title","").lower() or "pickle" in f.get("description","").lower()), None)
+                    sql_inj = next((f for f in sorted_actionable if "sql" in f.get("title","").lower()), None)
+
+                    if cmd_inj:
+                        top_v = cmd_inj
+                        v_name = "Command Injection"
+                        reasoning = (
+                            f"User-controlled input is passed directly to system shell execution (`{top_v.get('description', 'os.system')}`) on **Line {top_v.get('line', '?')}**. "
+                            f"This allows an attacker to execute arbitrary operating system commands with full host application privileges, resulting in complete server compromise (Remote Code Execution)."
+                        )
+                    elif deserialization:
+                        top_v = deserialization
+                        v_name = "Insecure Deserialization"
+                        reasoning = (
+                            f"Untrusted serialized byte streams are loaded (`{top_v.get('description', 'pickle.load')}`) on **Line {top_v.get('line', '?')}**. "
+                            f"This allows an attacker to instantiate arbitrary objects and execute Remote Code Execution (RCE) on the server."
+                        )
+                    elif sql_inj:
+                        top_v = sql_inj
+                        v_name = "SQL Injection"
+                        reasoning = (
+                            f"Untrusted input is directly concatenated into SQL query strings on **Line {top_v.get('line', '?')}**. "
+                            f"This allows attackers to manipulate database queries, extract sensitive tables, or tamper with database records."
+                        )
+                    elif sorted_actionable:
+                        top_v = sorted_actionable[0]
+                        v_name = top_v.get("title", "High Severity Vulnerability")
+                        reasoning = f"It presents the highest severity impact ({top_v.get('severity', 'HIGH').upper()}) on **Line {top_v.get('line', '?')}**: {top_v.get('description', '')}"
+                    else:
+                        top_v = None
+
+                    if top_v:
+                        code_fix = self._generate_code_fix_snippet(top_v.get("title", ""), top_v.get("description", ""), language, top_v.get("line", "?"))
+                        fallback_text = (
+                            f"### 🛡️ **Highest Risk Vulnerability Analysis for `{filename}`**\n\n"
+                            f"**Single Answer**: **{v_name}** (Line {top_v.get('line', '?')} • `{top_v.get('severity', 'HIGH').upper()}`)\n\n"
+                            f"#### **Why {v_name} Poses the Highest Risk**:\n"
+                            f"{reasoning}\n\n"
+                            f"Unlike lower-impact findings (such as database queries, weak hashing, or missing documentation), **{v_name}** grants an attacker direct **Remote Code Execution (RCE)** capabilities over the operating system shell.\n\n"
+                            f"#### **Refactored Secure Code Fix**:\n{code_fix}"
+                        )
+                    else:
+                        fallback_text = f"🎉 No high-risk vulnerabilities were found in `{filename}`."
 
                     return ChatResponse(response=fallback_text, sources=rag_sources)
 
