@@ -330,8 +330,8 @@ class CodeValidatorService:
         lang = language.lower()
         stripped = code.strip()
 
-        # Guard against raw HTML pasted into non-HTML compiled languages (Go, C++)
-        if lang in ("go", "cpp") and re.search(r"^\s*<(!DOCTYPE|html|body|div)", stripped, re.IGNORECASE):
+        # 1. Guard against raw HTML pasted into non-HTML languages
+        if lang in ("go", "cpp", "python", "java", "javascript", "typescript") and re.search(r"^\s*<(!DOCTYPE|html|body|div|p|h1|h2|script)", stripped, re.IGNORECASE):
             return {
                 "syntax_valid": False,
                 "errors": [
@@ -341,6 +341,51 @@ class CodeValidatorService:
                     }
                 ]
             }
+
+        # 2. Guard against language construct mismatch for Go
+        if lang == "go":
+            mismatches = [
+                (r"^\s*def\s+\w+\s*\(", "Python function definition"),
+                (r"^\s*public\s+class\s+\w+", "Java class declaration"),
+                (r"^\s*#include\s*<", "C/C++ include header"),
+            ]
+            for pattern, desc in mismatches:
+                if re.search(pattern, stripped, re.MULTILINE):
+                    return {
+                        "syntax_valid": False,
+                        "errors": [{"line": 1, "message": f"Language Mismatch: Selected language is GO, but code contains {desc}."}]
+                    }
+
+        # 3. Guard against language construct mismatch for C++
+        if lang == "cpp":
+            mismatches = [
+                (r"^\s*package\s+main", "Go package declaration"),
+                (r"^\s*func\s+main", "Go function definition"),
+                (r"^\s*def\s+\w+\s*\(", "Python function definition"),
+                (r"^\s*public\s+class\s+\w+", "Java class declaration"),
+            ]
+            for pattern, desc in mismatches:
+                if re.search(pattern, stripped, re.MULTILINE):
+                    return {
+                        "syntax_valid": False,
+                        "errors": [{"line": 1, "message": f"Language Mismatch: Selected language is CPP, but code contains {desc}."}]
+                    }
+
+        # 4. Guard against language construct mismatch for TypeScript
+        if lang == "typescript":
+            mismatches = [
+                (r"^\s*package\s+main", "Go package declaration"),
+                (r"^\s*func\s+main", "Go function definition"),
+                (r"^\s*#include\s*<", "C/C++ include header"),
+                (r"^\s*def\s+\w+\s*\(", "Python function definition"),
+                (r"^\s*public\s+class\s+\w+", "Java class declaration"),
+            ]
+            for pattern, desc in mismatches:
+                if re.search(pattern, stripped, re.MULTILINE):
+                    return {
+                        "syntax_valid": False,
+                        "errors": [{"line": 1, "message": f"Language Mismatch: Selected language is TYPESCRIPT, but code contains {desc}."}]
+                    }
 
         if lang == "python":
             return cls.validate_python_syntax(code)
