@@ -472,53 +472,95 @@ class ConversationalAssistantAgent:
 
                     return ChatResponse(response=fallback_text, sources=rag_sources)
 
-                # Specific severity query detection
+                # Query type C: Explicit full report request OR specific severity request
+                is_explicit_report = any(k in query_lower for k in [
+                    "what are all findings", "all findings", "show all findings", "list all findings",
+                    "full report", "vulnerability report", "scan report", "all issues", "show report",
+                    "list findings", "overview of findings", "diagnostic analysis", "all vulnerabilities"
+                ])
                 is_high_sec = any(k in query_lower for k in ["high severity", "critical", "major vulnerability", "major issue"])
                 is_med_sec = any(k in query_lower for k in ["medium severity", "medium issue", "medium vulnerability", "medium", "moderate"])
                 is_low_sec = any(k in query_lower for k in ["low severity", "low issue", "code smell", "code smells", "minor"])
 
-                if is_high_sec:
-                    target_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["high", "critical"]]
-                    header_title = "🚨 High Severity Vulnerability Remediation"
-                elif is_med_sec:
-                    target_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["medium", "moderate"]]
-                    header_title = "⚠️ Medium Severity Vulnerability Remediation"
-                elif is_low_sec:
-                    target_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["low", "info"]]
-                    header_title = "🔍 Low Severity & Code Smell Remediation"
-                else:
-                    target_findings = sorted_actionable
-                    header_title = "🛡️ Diagnostic Analysis & Solutions"
+                if is_explicit_report or is_high_sec or is_med_sec or is_low_sec:
+                    if is_high_sec:
+                        target_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["high", "critical"]]
+                        header_title = "🚨 High Severity Vulnerability Remediation"
+                    elif is_med_sec:
+                        target_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["medium", "moderate"]]
+                        header_title = "⚠️ Medium Severity Vulnerability Remediation"
+                    elif is_low_sec:
+                        target_findings = [f for f in sorted_actionable if str(f.get("severity", "")).lower() in ["low", "info"]]
+                        header_title = "🔍 Low Severity & Code Smell Remediation"
+                    else:
+                        target_findings = sorted_actionable
+                        header_title = "🛡️ Diagnostic Analysis & Solutions"
 
-                if target_findings:
-                    findings_formatted = []
-                    for idx, f in enumerate(target_findings[:5], 1):
-                        line = f.get("line", "?")
-                        sev = (f.get("severity") or "low").upper()
-                        title = f.get("title", "Issue")
-                        desc = f.get("description", "")
-                        raw_rec = f.get("recommendation") or f.get("description") or f"Follow OWASP secure coding guidelines for {display_lang}."
-                        rec = self._clean_recommendation(raw_rec, language)
-                        code_fix = self._generate_code_fix_snippet(title, desc, language, line)
-                        findings_formatted.append(
-                            f"#### {idx}. **{title}** (Line {line} • `{sev}`)\n"
-                            f"- **Problem**: {desc}\n"
-                            f"- **How to Fix**: {rec}\n\n"
-                            f"**Refactored Secure Code Fix**:\n{code_fix}\n"
+                    if target_findings:
+                        findings_formatted = []
+                        for idx, f in enumerate(target_findings[:5], 1):
+                            line = f.get("line", "?")
+                            sev = (f.get("severity") or "low").upper()
+                            title = f.get("title", "Issue")
+                            desc = f.get("description", "")
+                            raw_rec = f.get("recommendation") or f.get("description") or f"Follow OWASP secure coding guidelines for {display_lang}."
+                            rec = self._clean_recommendation(raw_rec, language)
+                            code_fix = self._generate_code_fix_snippet(title, desc, language, line)
+                            findings_formatted.append(
+                                f"#### {idx}. **{title}** (Line {line} • `{sev}`)\n"
+                                f"- **Problem**: {desc}\n"
+                                f"- **How to Fix**: {rec}\n\n"
+                                f"**Refactored Secure Code Fix**:\n{code_fix}\n"
+                            )
+                        findings_str = "\n".join(findings_formatted)
+
+                        fallback_text = (
+                            f"### {header_title} for `{filename}`\n\n"
+                            f"Showing **{len(target_findings)} matching items** ({high_count} High, {med_count} Medium, {low_count} Low total):\n\n"
+                            f"{findings_str}\n"
+                            f"💡 *Action Item*: Check the **AI Remediation Roadmap** tab for 1-click refactored code snippets."
                         )
-                    findings_str = "\n".join(findings_formatted)
+                    else:
+                        matching_label = "High" if is_high_sec else "Medium" if is_med_sec else "Low" if is_low_sec else ""
+                        fallback_text = f"🎉 Great news! No {matching_label} Severity issues were flagged in your scanned file (`{filename}`)."
+
+                    return ChatResponse(response=fallback_text, sources=rag_sources)
+
+                # Query type D: Specific question targeting a line number or vulnerability type in the report
+                import re
+                line_match = re.search(r"line\s*(\d+)", query_lower)
+                target_line = line_match.group(1) if line_match else None
+
+                matched_finding = None
+                if target_line:
+                    matched_finding = next((f for f in sorted_actionable if str(f.get("line")) == target_line), None)
+
+                if not matched_finding:
+                    # Match by vulnerability keyword in title/description
+                    for f in sorted_actionable:
+                        t_lower = (f.get("title") or "").lower()
+                        d_lower = (f.get("description") or "").lower()
+                        if any(kw in t_lower or kw in d_lower for kw in query_lower.split() if len(kw) > 3):
+                            matched_finding = f
+                            break
+
+                if matched_finding:
+                    m_line = matched_finding.get("line", "?")
+                    m_sev = (matched_finding.get("severity") or "LOW").upper()
+                    m_title = matched_finding.get("title", "Flagged Vulnerability")
+                    m_desc = matched_finding.get("description", "")
+                    raw_rec = matched_finding.get("recommendation") or matched_finding.get("description") or ""
+                    m_rec = self._clean_recommendation(raw_rec, language)
+                    m_fix = self._generate_code_fix_snippet(m_title, m_desc, language, m_line)
 
                     fallback_text = (
-                        f"### {header_title} for `{filename}`\n\n"
-                        f"Showing **{len(target_findings)} matching items** ({high_count} High, {med_count} Medium, {low_count} Low total):\n\n"
-                        f"{findings_str}\n"
-                        f"💡 *Action Item*: Check the **AI Remediation Roadmap** tab for 1-click refactored code snippets."
+                        f"### 🛡️ **Targeted Guidance: {m_title}** (Line {m_line} • `{m_sev}`)\n\n"
+                        f"**In Scanned File**: `{filename}`\n"
+                        f"- **Issue Identified**: {m_desc}\n"
+                        f"- **Security Guidance**: {m_rec}\n\n"
+                        f"#### **Refactored Secure Code Fix**:\n{m_fix}"
                     )
-                else:
-                    matching_label = "High" if is_high_sec else "Medium" if is_med_sec else "Low" if is_low_sec else ""
-                    fallback_text = f"🎉 Great news! No {matching_label} Severity issues were flagged in your scanned file (`{filename}`)."
-
-                return ChatResponse(response=fallback_text, sources=rag_sources)
+                    return ChatResponse(response=fallback_text, sources=rag_sources)
 
         if any(w in query_lower for w in ["improve", "refactor", "optimize", "clean code", "better code", "fix code", "how to improve", "how to fix"]):
             fallback_text = (
