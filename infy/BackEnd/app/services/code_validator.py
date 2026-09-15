@@ -271,8 +271,45 @@ class CodeValidatorService:
 
     def _validate_html(self, code: str) -> dict:
         """
-        Validates HTML tag structure using Python's HTMLParser.
+        Validates HTML tag structure using Python's HTMLParser and checks for language mismatches.
         """
+        stripped = code.strip()
+
+        # 1. Detect non-HTML programming language keywords
+        non_html_patterns = [
+            (r"^\s*package\s+\w+", "Go / Java package declaration"),
+            (r"^\s*func\s+\w+", "Go function definition"),
+            (r"^\s*def\s+\w+\s*\(", "Python function definition"),
+            (r"^\s*#include\s*<", "C/C++ include header"),
+            (r"^\s*public\s+class\s+\w+", "Java class declaration"),
+            (r"^\s*using\s+namespace\s+", "C++ namespace statement"),
+        ]
+
+        for pattern, desc in non_html_patterns:
+            if re.search(pattern, stripped, re.MULTILINE):
+                return {
+                    "syntax_valid": False,
+                    "errors": [
+                        {
+                            "line": 1,
+                            "message": f"Language Mismatch: Selected language is HTML, but submitted code contains {desc}."
+                        }
+                    ]
+                }
+
+        # 2. Require presence of HTML tags or doctype
+        if not re.search(r"<[a-zA-Z!/][^>]*>", stripped):
+            return {
+                "syntax_valid": False,
+                "errors": [
+                    {
+                        "line": 1,
+                        "message": "Syntax Error: HTML source must contain valid HTML tags (e.g., <html>, <div>, <p>)."
+                    }
+                ]
+            }
+
+        # 3. Verify HTML tag balance
         parser = HTMLTagBalancer()
         try:
             parser.feed(code)
@@ -288,9 +325,23 @@ class CodeValidatorService:
     @classmethod
     def validate_code(cls, code: str, language: str) -> Dict[str, Any]:
         """
-        Main entrypoint for syntax validation.
+        Main entrypoint for syntax validation and language mismatch verification.
         """
         lang = language.lower()
+        stripped = code.strip()
+
+        # Guard against raw HTML pasted into non-HTML compiled languages (Go, C++)
+        if lang in ("go", "cpp") and re.search(r"^\s*<(!DOCTYPE|html|body|div)", stripped, re.IGNORECASE):
+            return {
+                "syntax_valid": False,
+                "errors": [
+                    {
+                        "line": 1,
+                        "message": f"Language Mismatch: Selected language is {lang.upper()}, but submitted code appears to be HTML markup."
+                    }
+                ]
+            }
+
         if lang == "python":
             return cls.validate_python_syntax(code)
         elif lang == "java":
