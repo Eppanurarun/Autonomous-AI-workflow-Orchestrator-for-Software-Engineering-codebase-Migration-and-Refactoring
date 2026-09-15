@@ -207,7 +207,12 @@ class MongoDBStorageService:
         user = self.users.find_one({"user_id": user_id})
         if not user:
             return False
-        new_status = not user.get("is_active", True)
+        val = user.get("is_active")
+        if isinstance(val, str):
+            is_active = val.lower() in ("true", "1", "yes")
+        else:
+            is_active = bool(val)
+        new_status = not is_active
         self.users.update_one({"user_id": user_id}, {"$set": {"is_active": new_status}})
         return True
 

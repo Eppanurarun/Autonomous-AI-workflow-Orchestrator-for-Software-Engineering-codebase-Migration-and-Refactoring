@@ -305,10 +305,16 @@ class SQLiteStorageService:
             return [dict(row) for row in rows]
 
     def toggle_user_status(self, user_id: str) -> bool:
+        user = self.get_user_by_id(user_id)
+        if not user:
+            return False
+        val = user.get("is_active")
+        is_active = bool(val)
+        new_status = 0 if is_active else 1
         with self._connect() as connection:
             cursor = connection.execute(
-                "UPDATE users SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END WHERE user_id = ?",
-                (user_id,)
+                "UPDATE users SET is_active = ? WHERE user_id = ?",
+                (new_status, user_id)
             )
             return cursor.rowcount > 0
 
