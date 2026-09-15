@@ -1,19 +1,29 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException, UploadFile, File, status
+from fastapi import APIRouter, HTTPException, UploadFile, File, Header, status
 
 from app.schemas.code import CodeSubmitRequest, CodeSubmitResponse
 from app.services.code_validator import code_validator_service
 from app.services.file_service import file_service
 from app.services.storage_service import storage_service
 from app.services.agent_orchestrator import agent_orchestrator
+from app.core.security import decode_jwt_token
 
 
 router = APIRouter(prefix="/code", tags=["code"])
 
 
+def _extract_user_id(authorization: Optional[str]) -> Optional[str]:
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ")[1]
+        payload = decode_jwt_token(token)
+        if payload:
+            return payload.get("user_id")
+    return None
+
+
 @router.post("/submit", response_model=CodeSubmitResponse)
-async def submit_code(payload: CodeSubmitRequest):
+async def submit_code(payload: CodeSubmitRequest, authorization: Optional[str] = Header(None)):
     """
     Submits source code directly in a JSON body.
 
@@ -55,6 +65,7 @@ async def submit_code(payload: CodeSubmitRequest):
     filename = payload.filename or ("main." + ("py" if payload.language.lower() == "python" else "java"))
     analysis_data = {
         "analysis_id": analysis_id,
+        "user_id": _extract_user_id(authorization),
         "filename": filename,
         "status": (
             "completed"
@@ -95,7 +106,7 @@ async def submit_code(payload: CodeSubmitRequest):
 
 
 @router.post("/upload", response_model=CodeSubmitResponse)
-async def upload_code(file: UploadFile = File(...)):
+async def upload_code(file: UploadFile = File(...), authorization: Optional[str] = Header(None)):
     """
     Uploads a code file, runs syntax checking and
     code quality/security vulnerability analysis.
@@ -150,6 +161,7 @@ async def upload_code(file: UploadFile = File(...)):
     # Save validation state to memory
     analysis_data = {
         "analysis_id": analysis_id,
+        "user_id": _extract_user_id(authorization),
         "filename": filename,
         "status": (
             "completed"

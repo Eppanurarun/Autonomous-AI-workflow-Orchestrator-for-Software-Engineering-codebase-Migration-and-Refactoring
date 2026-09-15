@@ -85,10 +85,13 @@ class MongoDBStorageService:
         else:
             filename = data_or_filename or ("main." + ("py" if (language or "python") == "python" else "java"))
 
+        user_id = data.get("user_id") if isinstance(data_or_filename, dict) else None
+
         now_str = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
         doc = {
             "analysis_id": analysis_id,
+            "user_id": user_id,
             "filename": filename,
             "status": status,
             "language": language,
@@ -108,8 +111,11 @@ class MongoDBStorageService:
         doc.pop("_id", None)
         return doc
 
-    def list_analyses(self, limit: int = 50) -> List[Dict[str, Any]]:
-        cursor = self.analyses.find().sort("created_at", DESCENDING).limit(limit)
+    def list_analyses(self, limit: int = 50, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        query = {}
+        if user_id:
+            query = {"user_id": user_id}
+        cursor = self.analyses.find(query).sort("created_at", DESCENDING).limit(limit)
         results = []
         for doc in cursor:
             doc.pop("_id", None)

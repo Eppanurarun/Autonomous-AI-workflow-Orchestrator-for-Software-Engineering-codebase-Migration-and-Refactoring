@@ -41,9 +41,13 @@ class SQLiteStorageService:
                 """
             )
 
-            # Auto-migrate table if filename column doesn't exist yet
+            # Auto-migrate table if filename or user_id columns don't exist yet
             try:
                 connection.execute("ALTER TABLE analyses ADD COLUMN filename TEXT")
+            except sqlite3.OperationalError:
+                pass
+            try:
+                connection.execute("ALTER TABLE analyses ADD COLUMN user_id TEXT")
             except sqlite3.OperationalError:
                 pass
 
@@ -121,6 +125,7 @@ class SQLiteStorageService:
         data: Dict[str, Any],
     ) -> None:
         filename = data.get("filename") or ("main." + ("py" if data.get("language") == "python" else "java"))
+        user_id = data.get("user_id")
         with self._connect() as connection:
             connection.execute(
                 """
@@ -128,6 +133,7 @@ class SQLiteStorageService:
                 (
                     analysis_id,
                     filename,
+                    user_id,
                     status,
                     language,
                     code,
@@ -135,11 +141,12 @@ class SQLiteStorageService:
                     errors,
                     findings
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     analysis_id,
                     filename,
+                    user_id,
                     data["status"],
                     data["language"],
                     data["code"],
@@ -164,17 +171,30 @@ class SQLiteStorageService:
     def list_analyses(
         self,
         limit: int = 50,
+        user_id: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         with self._connect() as connection:
-            rows = connection.execute(
-                """
-                SELECT *
-                FROM analyses
-                ORDER BY created_at DESC, rowid DESC
-                LIMIT ?
-                """,
-                (limit,),
-            ).fetchall()
+            if user_id:
+                rows = connection.execute(
+                    """
+                    SELECT *
+                    FROM analyses
+                    WHERE user_id = ?
+                    ORDER BY created_at DESC, rowid DESC
+                    LIMIT ?
+                    """,
+                    (user_id, limit),
+                ).fetchall()
+            else:
+                rows = connection.execute(
+                    """
+                    SELECT *
+                    FROM analyses
+                    ORDER BY created_at DESC, rowid DESC
+                    LIMIT ?
+                    """,
+                    (limit,),
+                ).fetchall()
 
         return [self._decode(row) for row in rows]
 
