@@ -5,6 +5,22 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
+DEFAULT_FILENAMES = {
+    "python": "main.py",
+    "java": "Main.java",
+    "javascript": "app.js",
+    "typescript": "app.ts",
+    "cpp": "main.cpp",
+    "go": "main.go",
+    "html": "index.html",
+}
+
+
+def get_default_filename(language: str) -> str:
+    lang = (language or "python").lower()
+    return DEFAULT_FILENAMES.get(lang, f"main.{lang}")
+
+
 class SQLiteStorageService:
     def __init__(self):
         self._database_path = (
@@ -107,7 +123,7 @@ class SQLiteStorageService:
         keys = row.keys()
         return {
             "analysis_id": row["analysis_id"],
-            "filename": row["filename"] if "filename" in keys and row["filename"] else ("main." + ("py" if row["language"] == "python" else "java")),
+            "filename": row["filename"] if "filename" in keys and row["filename"] else get_default_filename(row["language"]),
             "status": row["status"],
             "language": row["language"],
             "code": row["code"],
@@ -124,7 +140,7 @@ class SQLiteStorageService:
         analysis_id: str,
         data: Dict[str, Any],
     ) -> None:
-        filename = data.get("filename") or ("main." + ("py" if data.get("language") == "python" else "java"))
+        filename = data.get("filename") or get_default_filename(data.get("language"))
         user_id = data.get("user_id")
         with self._connect() as connection:
             connection.execute(

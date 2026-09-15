@@ -73,17 +73,19 @@ class MongoDBStorageService:
         errors: Optional[List[Dict[str, Any]]] = None,
         findings: Optional[List[Dict[str, Any]]] = None,
     ) -> None:
+        from app.services.storage_service import get_default_filename
         if isinstance(data_or_filename, dict):
             data = data_or_filename
-            filename = data.get("filename") or ("main." + ("py" if data.get("language") == "python" else "java"))
-            status = data.get("status", "completed")
             language = data.get("language", "python")
+            filename = data.get("filename") or get_default_filename(language)
+            status = data.get("status", "completed")
             code = data.get("code", "")
             syntax_valid = data.get("syntax_valid", True)
             errors = data.get("errors") or []
             findings = data.get("findings") or []
         else:
-            filename = data_or_filename or ("main." + ("py" if (language or "python") == "python" else "java"))
+            language = language or "python"
+            filename = data_or_filename or get_default_filename(language)
 
         user_id = data.get("user_id") if isinstance(data_or_filename, dict) else None
 

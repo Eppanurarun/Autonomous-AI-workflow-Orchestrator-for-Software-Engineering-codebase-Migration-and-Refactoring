@@ -13,6 +13,22 @@ from app.core.security import decode_jwt_token
 router = APIRouter(prefix="/code", tags=["code"])
 
 
+DEFAULT_FILENAMES = {
+    "python": "main.py",
+    "java": "Main.java",
+    "javascript": "app.js",
+    "typescript": "app.ts",
+    "cpp": "main.cpp",
+    "go": "main.go",
+    "html": "index.html",
+}
+
+
+def get_default_filename(language: str) -> str:
+    lang = (language or "python").lower()
+    return DEFAULT_FILENAMES.get(lang, f"main.{lang}")
+
+
 def _extract_user_id(authorization: Optional[str]) -> Optional[str]:
     if authorization and authorization.startswith("Bearer "):
         token = authorization.split(" ")[1]
@@ -62,7 +78,7 @@ async def submit_code(payload: CodeSubmitRequest, authorization: Optional[str] =
     analysis_id = storage_service.generate_id()
 
     # Save validation state + findings to memory storage
-    filename = payload.filename or ("main." + ("py" if payload.language.lower() == "python" else "java"))
+    filename = payload.filename or get_default_filename(payload.language)
     analysis_data = {
         "analysis_id": analysis_id,
         "user_id": _extract_user_id(authorization),
@@ -156,7 +172,7 @@ async def upload_code(file: UploadFile = File(...), authorization: Optional[str]
 
     # Generate unique analysis ID
     analysis_id = storage_service.generate_id()
-    filename = file.filename or ("uploaded." + ("py" if language == "python" else "java"))
+    filename = file.filename or get_default_filename(language)
 
     # Save validation state to memory
     analysis_data = {
