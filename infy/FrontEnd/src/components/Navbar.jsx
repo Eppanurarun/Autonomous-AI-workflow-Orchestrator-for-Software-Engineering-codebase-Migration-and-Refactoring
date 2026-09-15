@@ -18,6 +18,7 @@ export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, o
         <button
           type="button"
           onClick={() => onNavigate("landing")}
+          aria-label="CodeGuard AI Home"
           className="group flex items-center gap-3 text-left"
         >
           <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-cyan-300 to-blue-600 text-slate-950 shadow-glow transition duration-300 group-hover:scale-105">
@@ -29,7 +30,7 @@ export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, o
           </div>
         </button>
 
-        <nav className="hidden items-center gap-1 rounded-xl border border-slate-800/80 bg-slate-950/40 p-1 md:flex">
+        <nav aria-label="Main Navigation" className="hidden items-center gap-1 rounded-xl border border-slate-800/80 bg-slate-950/40 p-1 md:flex">
           {navItems.map(({ id, label, icon: Icon }) => {
             const active = activePage === id;
             return (
@@ -37,6 +38,7 @@ export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, o
                 key={id}
                 type="button"
                 onClick={() => onNavigate(id)}
+                aria-current={active ? "page" : undefined}
                 className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition ${
                   active
                     ? "bg-cyan-400/10 text-cyan-200 shadow-[inset_0_0_0_1px_rgba(34,211,238,.14)]"
@@ -66,6 +68,7 @@ export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, o
               <button
                 type="button"
                 onClick={onLogout}
+                aria-label="Sign Out"
                 className="flex items-center gap-1 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-xs font-bold text-rose-300 hover:bg-rose-500/20 transition"
                 title="Sign Out"
               >
@@ -77,6 +80,7 @@ export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, o
             <button
               type="button"
               onClick={onOpenAuth}
+              aria-label="Sign In or Sign Up"
               className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-4 py-2 text-xs font-bold text-slate-950 shadow-glow transition hover:opacity-90"
             >
               <LogIn size={15} />
@@ -87,12 +91,13 @@ export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, o
       </div>
 
       {/* Mobile nav bar */}
-      <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-5 pb-2 md:hidden lg:px-8">
+      <nav aria-label="Mobile Navigation" className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-5 pb-2 md:hidden lg:px-8">
         {navItems.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             type="button"
             onClick={() => onNavigate(id)}
+            aria-current={activePage === id ? "page" : undefined}
             className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold ${
               activePage === id ? "bg-cyan-400/10 text-cyan-200" : "text-slate-500"
             }`}
@@ -101,7 +106,7 @@ export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, o
             {label}
           </button>
         ))}
-      </div>
+      </nav>
     </header>
   );
 }

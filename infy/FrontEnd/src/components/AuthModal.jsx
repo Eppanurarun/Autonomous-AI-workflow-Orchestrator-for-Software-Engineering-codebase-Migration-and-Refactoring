@@ -50,7 +50,12 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-xl animate-fadeIn">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="auth-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-xl animate-fadeIn"
+    >
       {/* Background Radial Glow */}
       <div className="pointer-events-none absolute h-96 w-96 rounded-full bg-cyan-500/10 blur-[120px]" />
 
@@ -62,6 +67,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
         <button
           type="button"
           onClick={onClose}
+          aria-label="Close dialog"
           className="absolute right-4 top-4 rounded-xl p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition"
         >
           <X size={18} />
@@ -72,7 +78,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
           <div className="mx-auto mb-3 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-cyan-300 via-blue-500 to-indigo-600 text-slate-950 shadow-glow">
             <ShieldCheck size={30} />
           </div>
-          <h3 className="text-2xl font-black text-white tracking-tight">
+          <h3 id="auth-modal-title" className="text-2xl font-black text-white tracking-tight">
             {isSignUp ? "Join CodeGuard AI" : "Welcome Back"}
           </h3>
           <p className="mt-1 text-xs text-slate-400">

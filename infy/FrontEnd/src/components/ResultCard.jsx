@@ -443,6 +443,8 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
 
         <button
           type="button"
+          aria-expanded={isAssistantOpen}
+          aria-controls="assistant-drawer"
           onClick={() => {
             if (!authUser) {
               if (onOpenAuth) onOpenAuth();
