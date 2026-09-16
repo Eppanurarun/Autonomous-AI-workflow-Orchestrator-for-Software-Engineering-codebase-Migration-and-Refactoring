@@ -330,7 +330,28 @@ class CodeValidatorService:
         lang = language.lower()
         stripped = code.strip()
 
-        # 1. Guard against raw HTML pasted into non-HTML languages
+        # 1. Guard against Unsupported Languages (e.g., Rust, C#, PHP)
+        unsupported_signatures = [
+            (r"^\s*fn\s+main\s*\(", "Rust (`fn main`)"),
+            (r"println!\s*\(", "Rust macro (`println!`)"),
+            (r"^\s*let\s+mut\s+", "Rust mutable variable (`let mut`)"),
+            (r"^\s*use\s+std::", "Rust standard library import (`use std::`)"),
+            (r"^\s*using\s+System;", "C# namespace (`using System;`)"),
+            (r"^\s*<\?php", "PHP header (`<?php`)"),
+        ]
+        for pattern, desc in unsupported_signatures:
+            if re.search(pattern, stripped, re.MULTILINE):
+                return {
+                    "syntax_valid": False,
+                    "errors": [
+                        {
+                            "line": 1,
+                            "message": f"Language Not Supported: Submitted code contains {desc}. Rust/unsupported languages are currently not supported by CodeGuard AI, but support will be added soon!"
+                        }
+                    ]
+                }
+
+        # 2. Guard against raw HTML pasted into non-HTML languages
         if lang in ("go", "cpp", "python", "java", "javascript", "typescript") and re.search(r"^\s*<(!DOCTYPE|html|body|div|p|h1|h2|script)", stripped, re.IGNORECASE):
             return {
                 "syntax_valid": False,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Lock, Mail, User, ShieldCheck, Sparkles, AlertCircle, Eye, EyeOff, Code, Shield } from "lucide-react";
+import { X, Lock, Mail, User, ShieldCheck, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { loginUser, signupUser } from "../services/api";
 
 export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
@@ -34,18 +34,6 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
       setError(err.message || "Authentication failed. Please check your credentials.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDemoFill = (type) => {
-    setError("");
-    setIsSignUp(false);
-    if (type === "admin") {
-      setEmail("admin@codeguard.ai");
-      setPassword("admin");
-    } else {
-      setEmail("sumit@codeguard.ai");
-      setPassword("password123");
     }
   };
 
@@ -119,36 +107,6 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
           >
             Create Account
           </button>
-        </div>
-
-        {/* Demo Auto-Fill Shortcuts */}
-        <div className="mt-4 space-y-1.5">
-          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center">Quick Demo Login Shortcuts</p>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => handleDemoFill("dev")}
-              className="group flex flex-col items-center justify-center rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-2.5 hover:bg-cyan-500/15 hover:border-cyan-400/40 transition text-left"
-            >
-              <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-300">
-                <Code size={13} />
-                <span>Developer</span>
-              </div>
-              <span className="text-[10px] font-mono text-slate-400 mt-0.5">sumit@codeguard.ai</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleDemoFill("admin")}
-              className="group flex flex-col items-center justify-center rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-2.5 hover:bg-indigo-500/15 hover:border-indigo-400/40 transition text-left"
-            >
-              <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-300">
-                <Shield size={13} />
-                <span>Admin SOC</span>
-              </div>
-              <span className="text-[10px] font-mono text-slate-400 mt-0.5">admin@codeguard.ai</span>
-            </button>
-          </div>
         </div>
 
         {/* Error Alert */}
