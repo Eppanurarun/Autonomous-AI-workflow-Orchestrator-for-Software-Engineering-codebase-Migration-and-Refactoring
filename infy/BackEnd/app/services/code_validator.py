@@ -322,6 +322,24 @@ class CodeValidatorService:
         except Exception as e:
             return {"syntax_valid": False, "errors": [{"line": 1, "message": f"HTML parser exception: {str(e)}"}]}
 
+    @staticmethod
+    def validate_metadata(code: str, language: str) -> Tuple[bool, str]:
+        """
+        Validates basic metadata: language support, size limits, and non-empty criteria.
+        """
+        if not code or not code.strip():
+            return False, "Code content cannot be empty"
+            
+        if language.lower() not in settings.ALLOWED_LANGUAGES:
+            lang_display = language.capitalize() if language else "This language"
+            return False, f"{lang_display} is currently not supported by CodeGuard AI, but support will be added soon!"
+            
+        if len(code.encode("utf-8")) > settings.MAX_FILE_SIZE_BYTES:
+            limit_mb = settings.MAX_FILE_SIZE_BYTES / (1024 * 1024)
+            return False, f"Code size exceeds the limit of {limit_mb:.1f} MB"
+            
+        return True, ""
+
     @classmethod
     def validate_code(cls, code: str, language: str) -> Dict[str, Any]:
         """
@@ -330,23 +348,38 @@ class CodeValidatorService:
         lang = language.lower()
         stripped = code.strip()
 
-        # 1. Guard against Unsupported Languages (e.g., Rust, C#, PHP)
+        # 1. Guard against Unsupported Languages (Rust, C#, PHP, Ruby, Swift, Kotlin, etc.)
         unsupported_signatures = [
-            (r"^\s*fn\s+main\s*\(", "Rust (`fn main`)"),
-            (r"println!\s*\(", "Rust macro (`println!`)"),
-            (r"^\s*let\s+mut\s+", "Rust mutable variable (`let mut`)"),
-            (r"^\s*use\s+std::", "Rust standard library import (`use std::`)"),
-            (r"^\s*using\s+System;", "C# namespace (`using System;`)"),
-            (r"^\s*<\?php", "PHP header (`<?php`)"),
+            (r"^\s*fn\s+main\s*\(", "Rust"),
+            (r"println!\s*\(", "Rust"),
+            (r"^\s*let\s+mut\s+", "Rust"),
+            (r"^\s*use\s+std::", "Rust"),
+            (r"^\s*pub\s+fn\s+", "Rust"),
+            (r"^\s*using\s+System;", "C#"),
+            (r"^\s*namespace\s+[A-Za-z0-9_.]+", "C#"),
+            (r"Console\.WriteLine\(", "C#"),
+            (r"^\s*<\?php", "PHP"),
+            (r"^\s*echo\s+\$", "PHP"),
+            (r"^\s*require\s+['\"]", "Ruby"),
+            (r"^\s*attr_accessor\s+", "Ruby"),
+            (r"^\s*fun\s+main\s*\(", "Kotlin"),
+            (r"^\s*import\s+Foundation", "Swift"),
+            (r"^\s*import\s+UIKit", "Swift"),
+            (r"^\s*object\s+\w+\s*\{\s*def\s+main", "Scala"),
+            (r"^#!/(bin|usr/bin)/(bash|sh|zsh)", "Shell"),
+            (r"^\s*library\([a-zA-Z0-9._]+\)", "R"),
+            (r"^\s*import\s+'package:", "Dart"),
+            (r"^\s*defmodule\s+", "Elixir"),
+            (r"^\s*main\s*::\s*IO\s*\(\)", "Haskell"),
         ]
-        for pattern, desc in unsupported_signatures:
+        for pattern, detected_lang in unsupported_signatures:
             if re.search(pattern, stripped, re.MULTILINE):
                 return {
                     "syntax_valid": False,
                     "errors": [
                         {
                             "line": 1,
-                            "message": f"Language Not Supported: Submitted code contains {desc}. Rust/unsupported languages are currently not supported by CodeGuard AI, but support will be added soon!"
+                            "message": f"{detected_lang} is currently not supported by CodeGuard AI, but support will be added soon!"
                         }
                     ]
                 }
@@ -419,9 +452,10 @@ class CodeValidatorService:
         elif lang == "html":
             return cls()._validate_html(code)
         else:
+            lang_display = language.capitalize() if language else "This language"
             return {
                 "syntax_valid": False,
-                "errors": [{"line": 1, "message": f"Unsupported language '{language}' for syntax validation."}]
+                "errors": [{"line": 1, "message": f"{lang_display} is currently not supported by CodeGuard AI, but support will be added soon!"}]
             }
 
 code_validator_service = CodeValidatorService()
