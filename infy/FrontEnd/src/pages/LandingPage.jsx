@@ -52,7 +52,7 @@ export default function LandingPage({ onNavigate }) {
               <button
                 type="button"
                 onClick={() => onNavigate("analyze")}
-                className="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 dark:from-cyan-400 dark:via-blue-500 dark:to-indigo-600 px-6 py-3.5 text-sm font-extrabold text-white dark:text-slate-950 shadow-md dark:shadow-glow transition hover:-translate-y-0.5 sm:w-auto"
+                className="group flex w-full items-center justify-center gap-2.5 rounded-xl border border-cyan-400/60 dark:border-cyan-400/50 bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 dark:from-cyan-400 dark:via-blue-500 dark:to-indigo-600 px-6 py-3.5 text-sm font-extrabold text-white dark:text-slate-950 shadow-md dark:shadow-glow transition hover:-translate-y-0.5 sm:w-auto"
               >
                 <Code2 size={18} />
                 <span>Start Code Inspection</span>
@@ -282,7 +282,7 @@ cursor.execute(query, (user_input,))`}</code>
             <button
               type="button"
               onClick={() => onNavigate("analyze")}
-              className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-500 px-6 py-3.5 text-sm font-extrabold text-slate-950 shadow-glow transition hover:-translate-y-0.5"
+              className="flex items-center justify-center gap-2 rounded-xl border border-cyan-400/60 dark:border-cyan-400/50 bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 dark:from-cyan-400 dark:via-blue-500 dark:to-indigo-600 px-6 py-3.5 text-sm font-extrabold text-white dark:text-slate-950 shadow-md dark:shadow-glow transition hover:-translate-y-0.5"
             >
               <Code2 size={18} />
               <span>Start Code Inspection</span>

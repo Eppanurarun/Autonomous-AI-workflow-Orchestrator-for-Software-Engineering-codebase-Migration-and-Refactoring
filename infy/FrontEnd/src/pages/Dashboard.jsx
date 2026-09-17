@@ -105,7 +105,7 @@ export default function Dashboard({ onNavigate, onSelectAnalysis, authUser, onOp
               <button
                 type="button"
                 onClick={() => onNavigate("analyze")}
-                className="group flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-300 to-blue-500 px-5 py-3 text-sm font-bold text-slate-950 shadow-glow transition hover:-translate-y-0.5"
+                className="group flex items-center justify-center gap-2 rounded-xl border border-cyan-400/60 dark:border-cyan-400/50 bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 dark:from-cyan-300 dark:to-blue-500 px-5 py-3 text-sm font-extrabold text-white dark:text-slate-950 shadow-md dark:shadow-glow transition hover:-translate-y-0.5"
               >
                 <Code2 size={17} />
                 Start New Analysis
