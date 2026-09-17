@@ -180,7 +180,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl border border-cyan-400/60 dark:border-cyan-400/40 bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 dark:from-cyan-300 dark:via-blue-500 dark:to-indigo-600 py-3.5 text-sm font-black text-white dark:text-slate-950 shadow-md dark:shadow-glow transition hover:opacity-95 active:scale-[0.99] disabled:opacity-50"
+            className="btn-gradient-primary w-full rounded-xl py-3.5 text-sm font-black transition hover:opacity-95 active:scale-[0.99] disabled:opacity-50"
           >
             {loading ? "Authenticating..." : isSignUp ? "Create Developer Account" : "Sign In to Platform"}
           </button>

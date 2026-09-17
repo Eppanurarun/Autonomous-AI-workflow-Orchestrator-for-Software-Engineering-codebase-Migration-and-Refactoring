@@ -169,16 +169,16 @@ export default function CodeReview({ onNavigate, initialAnalysis, authUser, onOp
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="group flex items-center justify-center gap-2 rounded-xl border border-cyan-400/60 dark:border-cyan-400/50 bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 dark:from-cyan-300 dark:to-blue-500 px-6 py-3.5 text-sm font-extrabold text-white dark:text-slate-950 shadow-md dark:shadow-glow transition hover:-translate-y-0.5 hover:shadow-[0_0_35px_rgba(34,211,238,.35)] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+                className="btn-gradient-primary group flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-extrabold transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
               >
                 {loading ? (
                   <>
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 dark:border-slate-950/30 border-t-white dark:border-t-slate-950" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 dark:border-slate-950/40 border-t-white dark:border-t-slate-950" />
                     Analyzing...
                   </>
                 ) : (
                   <>
-                    Analyze Code <Send size={16} className="transition group-hover:translate-x-0.5" />
+                    <span>Analyze Code</span> <Send size={16} className="transition group-hover:translate-x-0.5" />
                   </>
                 )}
               </button>

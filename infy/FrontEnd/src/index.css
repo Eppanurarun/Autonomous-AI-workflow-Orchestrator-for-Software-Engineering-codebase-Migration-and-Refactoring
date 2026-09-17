@@ -274,22 +274,74 @@ html.light .bg-rose-500\/10 {
 
 /* Hero Section Gradient Text & Clip-Text Engine in Light Mode */
 html.light .bg-clip-text,
-html.light .text-transparent {
+html.light span.bg-clip-text {
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
   -webkit-background-clip: text !important;
 }
 
-html.light .bg-gradient-to-r.from-cyan-300,
-html.light .bg-gradient-to-r.from-cyan-400,
-html.light .bg-gradient-to-r.from-cyan-700,
-html.light span.bg-gradient-to-r {
+html.light span.bg-clip-text.bg-gradient-to-r,
+html.light .bg-clip-text.bg-gradient-to-r {
   background-image: linear-gradient(to right, #0284c7, #2563eb, #4338ca) !important;
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  -webkit-background-clip: text !important;
+}
+
+/* ====================================================
+   🔥 UNIVERSAL PRIMARY GRADIENT BUTTON ENGINE
+   ==================================================== */
+.btn-gradient-primary {
+  background-image: linear-gradient(to right, #0284c7, #2563eb, #4338ca) !important;
+  background-color: #0284c7 !important;
+  border: 1.5px solid #38bdf8 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4) !important;
+}
+
+.btn-gradient-primary *,
+.btn-gradient-primary span,
+.btn-gradient-primary svg {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html.light .btn-gradient-primary,
+body.light-mode .btn-gradient-primary {
+  background-image: linear-gradient(to right, #0284c7, #2563eb, #4338ca) !important;
+  background-color: #0284c7 !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45) !important;
+}
+
+html.light .btn-gradient-primary *,
+html.light .btn-gradient-primary span,
+html.light .btn-gradient-primary svg {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html.dark .btn-gradient-primary,
+:root:not(.light) .btn-gradient-primary {
+  background-image: linear-gradient(to right, #38bdf8, #3b82f6) !important;
+  background-color: #38bdf8 !important;
+  border: 1.5px solid #7dd3fc !important;
+  color: #020617 !important;
+  -webkit-text-fill-color: #020617 !important;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.45) !important;
+}
+
+html.dark .btn-gradient-primary *,
+html.dark .btn-gradient-primary span,
+html.dark .btn-gradient-primary svg,
+:root:not(.light) .btn-gradient-primary *,
+:root:not(.light) .btn-gradient-primary span,
+:root:not(.light) .btn-gradient-primary svg {
+  color: #020617 !important;
+  -webkit-text-fill-color: #020617 !important;
 }
 
 /* Hero Pill Badge Ultra-High-Contrast Solid Styling */
