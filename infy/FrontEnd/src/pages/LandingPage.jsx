@@ -29,19 +29,22 @@ export default function LandingPage({ onNavigate }) {
 
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-xs font-extrabold text-cyan-300 shadow-glow">
-              <Sparkles size={14} className="text-cyan-400" />
+            {/* Top Pill Badge */}
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/50 dark:border-cyan-400/40 bg-cyan-100/90 dark:bg-cyan-950/80 px-4 py-2 text-xs font-extrabold text-cyan-900 dark:text-cyan-300 shadow-sm dark:shadow-glow">
+              <Sparkles size={14} className="text-cyan-700 dark:text-cyan-400" />
               <span>Next-Gen AI Multi-Agent Platform</span>
             </div>
 
-            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.15]">
+            {/* H1 Headline */}
+            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl leading-[1.15]">
               Make Every Line of Code{" "}
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-cyan-700 via-blue-700 to-indigo-700 dark:from-cyan-300 dark:via-blue-400 dark:to-indigo-300 bg-clip-text text-transparent">
                 Safer & Cleaner.
               </span>
             </h1>
 
-            <p className="mt-6 text-base leading-relaxed text-slate-300 sm:text-lg font-medium">
+            {/* Subtitle Paragraph */}
+            <p className="mt-6 text-base leading-relaxed text-slate-800 dark:text-slate-200 sm:text-lg font-semibold">
               Automated multi-agent platform for Python & Java codebases. Detect OWASP Top 10 vulnerabilities, review code quality, generate side-by-side AI remediations, and export Pull Request review reports in seconds.
             </p>
 
@@ -49,7 +52,7 @@ export default function LandingPage({ onNavigate }) {
               <button
                 type="button"
                 onClick={() => onNavigate("analyze")}
-                className="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-500 px-6 py-3.5 text-sm font-extrabold text-slate-950 shadow-glow transition hover:-translate-y-0.5 hover:shadow-[0_0_35px_rgba(34,211,238,.35)] sm:w-auto"
+                className="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 px-6 py-3.5 text-sm font-extrabold text-slate-950 shadow-glow transition hover:-translate-y-0.5 hover:shadow-[0_0_35px_rgba(34,211,238,.35)] sm:w-auto"
               >
                 <Code2 size={18} />
                 <span>Start Code Inspection</span>
@@ -59,30 +62,30 @@ export default function LandingPage({ onNavigate }) {
               <button
                 type="button"
                 onClick={() => onNavigate("dashboard")}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-950/60 px-6 py-3.5 text-sm font-semibold text-slate-200 transition hover:border-slate-600 hover:bg-slate-900 sm:w-auto"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950/60 px-6 py-3.5 text-sm font-extrabold text-slate-900 dark:text-slate-200 transition hover:border-slate-400 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-900 sm:w-auto shadow-sm"
               >
-                <BarChart3 size={17} className="text-cyan-300" />
+                <BarChart3 size={17} className="text-cyan-600 dark:text-cyan-300" />
                 <span>View Live Dashboard</span>
               </button>
             </div>
 
             {/* Quick Metrics */}
-            <div className="mt-12 grid grid-cols-2 gap-4 border-t border-slate-800/80 pt-8 sm:grid-cols-4">
+            <div className="mt-12 grid grid-cols-2 gap-4 border-t border-slate-300 dark:border-slate-800/80 pt-8 sm:grid-cols-4">
               <div>
-                <p className="text-2xl font-black text-white">5 Agents</p>
-                <p className="mt-1 text-xs text-slate-400">Parallel AI Pipeline</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white">5 Agents</p>
+                <p className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-300">Parallel AI Pipeline</p>
               </div>
               <div>
-                <p className="text-2xl font-black text-cyan-300">OWASP Top 10</p>
-                <p className="mt-1 text-xs text-slate-400">Security Rule Coverage</p>
+                <p className="text-2xl font-black text-cyan-700 dark:text-cyan-300">OWASP Top 10</p>
+                <p className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-300">Security Rule Coverage</p>
               </div>
               <div>
-                <p className="text-2xl font-black text-indigo-300">RAG Grounded</p>
-                <p className="mt-1 text-xs text-slate-400">Zero-Hallucination Advice</p>
+                <p className="text-2xl font-black text-indigo-700 dark:text-indigo-300">RAG Grounded</p>
+                <p className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-300">Zero-Hallucination Advice</p>
               </div>
               <div>
-                <p className="text-2xl font-black text-emerald-300">PDF & PR</p>
-                <p className="mt-1 text-xs text-slate-400">Automated Exports</p>
+                <p className="text-2xl font-black text-emerald-700 dark:text-emerald-300">PDF & PR</p>
+                <p className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-300">Automated Exports</p>
               </div>
             </div>
           </div>
