@@ -194,37 +194,38 @@ export default function Dashboard({ onNavigate, onSelectAnalysis, authUser, onOp
                         </p>
                       </div>
                     </div>
-                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 sm:justify-end">
-                      {/* Styled Issues & Status Badge */}
-                      <div className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold border shadow-sm ${
-                        score >= 85
-                          ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                          : score >= 70
-                          ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                          : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
-                      }`}>
-                        <span className={`h-2 w-2 rounded-full ${
-                          score >= 85
-                            ? 'bg-emerald-400'
-                            : score >= 70
-                            ? 'bg-amber-400'
-                            : 'bg-rose-400 animate-pulse'
-                        }`} />
-                        <span>{issuesCount} {issuesCount === 1 ? 'issue' : 'issues'}</span>
-                        <span className="opacity-40">•</span>
-                        <span className="font-bold">{statusLabel}</span>
+                    <div className="flex items-center gap-4 sm:gap-6 sm:justify-end">
+                      {/* Issues Count & Status Badge (Fixed Width Column for Perfect Vertical Alignment) */}
+                      <div className="w-36 shrink-0 text-right">
+                        <p className={`text-xs font-bold ${issuesCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                          {issuesCount} {issuesCount === 1 ? 'issue' : 'issues'}
+                        </p>
+                        <div className="mt-1 flex justify-end">
+                          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border shadow-sm ${
+                            score >= 85
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                              : score >= 70
+                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                              : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                          }`}>
+                            <span className={`h-1.5 w-1.5 rounded-full ${
+                              score >= 85
+                                ? 'bg-emerald-400'
+                                : score >= 70
+                                ? 'bg-amber-400'
+                                : 'bg-rose-400 animate-pulse'
+                            }`} />
+                            {statusLabel}
+                          </span>
+                        </div>
                       </div>
 
-                      {/* Styled Score Badge */}
-                      <div className={`flex flex-col items-center justify-center min-w-[50px] rounded-xl px-2.5 py-1 border bg-slate-900/60 shadow-inner ${
-                        score >= 85
-                          ? 'border-emerald-500/30 text-emerald-400'
-                          : score >= 70
-                          ? 'border-amber-500/30 text-amber-400'
-                          : 'border-rose-500/30 text-rose-400'
-                      }`}>
-                        <span className="text-sm font-black leading-none">{score}</span>
-                        <span className="mt-0.5 text-[9px] font-bold tracking-widest text-slate-500 uppercase">SCORE</span>
+                      {/* Score Column (Fixed Width & Centered) */}
+                      <div className="w-14 shrink-0 text-center">
+                        <p className={`text-lg font-black leading-none ${
+                          score >= 85 ? 'text-emerald-400' : score >= 70 ? 'text-amber-400' : 'text-rose-400'
+                        }`}>{score}</p>
+                        <p className="mt-1 text-[9px] font-bold uppercase tracking-widest text-slate-500">SCORE</p>
                       </div>
 
                       {/* Review Button */}
