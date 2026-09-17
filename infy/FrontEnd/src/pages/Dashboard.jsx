@@ -180,34 +180,59 @@ export default function Dashboard({ onNavigate, onSelectAnalysis, authUser, onOp
                 const displayFileName = item.filename || (item.language === "python" ? "script.py" : "Main.java");
 
                 return (
-                  <div key={item.analysis_id} className="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between transition hover:bg-slate-850/30">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-800/80 text-cyan-300">
-                        <FileCode2 size={17} />
+                  <div key={item.analysis_id} className="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between transition hover:bg-slate-800/40">
+                    <div className="flex min-w-0 items-center gap-3.5">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-800/80 text-cyan-300 border border-slate-700/50 shadow-inner">
+                        <FileCode2 size={18} />
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-slate-200">{displayFileName}</p>
-                        <p className="mt-0.5 text-xs text-slate-500 uppercase font-mono tracking-wider">
-                          {item.language} • <span className="text-slate-400 normal-case">{formatDate(item.created_at)}</span>
+                        <p className="truncate text-sm font-semibold text-slate-100">{displayFileName}</p>
+                        <p className="mt-0.5 text-xs text-slate-400 font-mono">
+                          <span className="uppercase tracking-wider text-cyan-400 font-bold">{item.language}</span>
+                          <span className="mx-1.5 text-slate-600">•</span>
+                          <span className="text-slate-400">{formatDate(item.created_at)}</span>
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-5 sm:justify-end">
-                      <div>
-                        <p className="text-xs font-semibold text-slate-300">{issuesCount} issues</p>
-                        <p className={`mt-0.5 text-[11px] font-medium ${score >= 80 ? 'text-emerald-400' : score >= 60 ? 'text-amber-400' : 'text-rose-400'}`}>
-                          {statusLabel}
-                        </p>
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 sm:justify-end">
+                      {/* Styled Issues & Status Badge */}
+                      <div className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold border shadow-sm ${
+                        score >= 85
+                          ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                          : score >= 70
+                          ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                          : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
+                      }`}>
+                        <span className={`h-2 w-2 rounded-full ${
+                          score >= 85
+                            ? 'bg-emerald-400'
+                            : score >= 70
+                            ? 'bg-amber-400'
+                            : 'bg-rose-400 animate-pulse'
+                        }`} />
+                        <span>{issuesCount} {issuesCount === 1 ? 'issue' : 'issues'}</span>
+                        <span className="opacity-40">•</span>
+                        <span className="font-bold">{statusLabel}</span>
                       </div>
-                      <div className="text-right">
-                        <p className="text-lg font-extrabold text-white">{score}</p>
-                        <p className="text-[10px] uppercase tracking-wider text-slate-600">score</p>
+
+                      {/* Styled Score Badge */}
+                      <div className={`flex flex-col items-center justify-center min-w-[50px] rounded-xl px-2.5 py-1 border bg-slate-900/60 shadow-inner ${
+                        score >= 85
+                          ? 'border-emerald-500/30 text-emerald-400'
+                          : score >= 70
+                          ? 'border-amber-500/30 text-amber-400'
+                          : 'border-rose-500/30 text-rose-400'
+                      }`}>
+                        <span className="text-sm font-black leading-none">{score}</span>
+                        <span className="mt-0.5 text-[9px] font-bold tracking-widest text-slate-500 uppercase">SCORE</span>
                       </div>
+
+                      {/* Review Button */}
                       {onSelectAnalysis && (
                         <button
                           type="button"
                           onClick={() => onSelectAnalysis(item)}
-                          className="flex items-center gap-1 rounded-lg border border-cyan-400/20 bg-cyan-400/10 px-2.5 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-400/20"
+                          className="flex items-center gap-1.5 rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-3 py-1.5 text-xs font-bold text-cyan-300 transition hover:bg-cyan-400/20 hover:border-cyan-400/60 hover:text-white shadow-sm"
                           title="Open Analysis in Review"
                         >
                           <span>Review</span>
