@@ -522,31 +522,152 @@ html.light .bg-slate-800\/70 {
   color: #0f172a !important;
 }
 
-/* ResultCard & Inspection Overview Dark Gradients Override in Light Mode */
+/* ResultCard & Inspection Overview Light Mode Engine */
+html.light .bg-gradient-to-br.from-emerald-950\/30,
+html.light .from-emerald-950\/30 {
+  background-image: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%) !important;
+  border-color: #a7f3d0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.08) !important;
+}
+
+html.light .bg-gradient-to-br.from-rose-950\/30,
+html.light .from-rose-950\/30 {
+  background-image: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%) !important;
+  border-color: #fecdd3 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.08) !important;
+}
+
+/* Summary Cards & Info Cards inside ResultCard */
+html.light .bg-slate-950\/45,
+html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/70,
+html.light .bg-slate-950\/80,
+html.light .bg-slate-950\/90 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Summary Card Tone Backgrounds & Labels in Light Mode */
+html.light .bg-rose-400\/5,
+html.light .bg-rose-400\/10,
+html.light .bg-rose-500\/10 {
+  background-color: #fff1f2 !important;
+  border-color: #fecdd3 !important;
+}
+
+html.light .bg-amber-400\/5,
+html.light .bg-amber-400\/10,
+html.light .bg-amber-500\/10 {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+}
+
+html.light .bg-cyan-400\/5,
+html.light .bg-cyan-400\/10,
+html.light .bg-cyan-500\/10 {
+  background-color: #f0f9ff !important;
+  border-color: #bae6fd !important;
+}
+
+html.light .bg-emerald-400\/5,
+html.light .bg-emerald-400\/10,
+html.light .bg-emerald-500\/10 {
+  background-color: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+}
+
+/* Interactive Navigation Tab Bar & Buttons */
+html.light .bg-slate-900\/70,
+html.light .bg-slate-900\/50,
+html.light .bg-slate-900\/80 {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light button.text-slate-400 {
+  color: #475569 !important;
+}
+
+html.light button.text-slate-400:hover {
+  background-color: #f1f5f9 !important;
+  color: #0284c7 !important;
+}
+
+html.light span.bg-slate-800 {
+  background-color: #e2e8f0 !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Active Navigation Tabs in Light Mode */
+html.light .bg-cyan-400\/15 {
+  background-color: #e0f2fe !important;
+  border-color: #0284c7 !important;
+  color: #0369a1 !important;
+}
+
+html.light .bg-indigo-500\/20 {
+  background-color: #e0e7ff !important;
+  border-color: #4338ca !important;
+  color: #3730a3 !important;
+}
+
+html.light .bg-emerald-500\/20,
+html.light .bg-emerald-500\/10 {
+  background-color: #d1fae5 !important;
+  border-color: #059669 !important;
+  color: #065f46 !important;
+}
+
+/* PR Summary Tab & AI Remediation Tab Containers */
+html.light .from-indigo-950\/30,
+html.light .from-cyan-950\/30,
+html.light .from-cyan-950\/40,
+html.light .from-slate-900\/95,
 html.light .bg-gradient-to-r.from-cyan-950\/40.via-slate-950.to-indigo-950\/40,
 html.light .bg-gradient-to-br.from-slate-900\/95.via-slate-950.to-indigo-950\/90,
 html.light .bg-gradient-to-br.from-indigo-950\/30.via-slate-900\/70.to-slate-950\/80,
 html.light .bg-gradient-to-br.from-cyan-950\/30.via-slate-900\/70.to-slate-950\/80 {
-  background-image: linear-gradient(to bottom right, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.96)) !important;
-  border-color: rgba(203, 213, 225, 0.9) !important;
+  background-image: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border-color: #cbd5e1 !important;
   color: #0f172a !important;
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05) !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06) !important;
 }
 
-html.light .bg-gradient-to-b.from-rose-950\/40.to-slate-950\/80 {
-  background-image: linear-gradient(to bottom, rgba(255, 241, 242, 0.95), rgba(255, 255, 255, 0.95)) !important;
-  border-color: rgba(253, 164, 175, 0.6) !important;
+/* Side-by-Side Code Comparison Blocks in AI Remediation */
+html.light .from-rose-950\/40 {
+  background-image: linear-gradient(180deg, #fff1f2 0%, #ffffff 100%) !important;
+  border-color: #fecdd3 !important;
 }
 
-html.light .bg-gradient-to-b.from-emerald-950\/40.to-slate-950\/80 {
-  background-image: linear-gradient(to bottom, rgba(236, 253, 245, 0.95), rgba(255, 255, 255, 0.95)) !important;
-  border-color: rgba(110, 231, 183, 0.6) !important;
+html.light .from-emerald-950\/40 {
+  background-image: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%) !important;
+  border-color: #a7f3d0 !important;
+}
+
+html.light pre.text-rose-200\/90,
+html.light pre .text-rose-200\/90 {
+  background-color: #fff1f2 !important;
+  border-color: #fecdd3 !important;
+  color: #9f1239 !important;
+}
+
+html.light pre.text-emerald-200\/90,
+html.light pre .text-emerald-200\/90 {
+  background-color: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+  color: #065f46 !important;
 }
 
 /* Light Scrollbars */
 html.light ::-webkit-scrollbar-track { background: #f1f5f9; }
 html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
 
 
 
