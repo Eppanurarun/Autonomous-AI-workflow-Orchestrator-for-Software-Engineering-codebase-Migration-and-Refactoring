@@ -29,19 +29,19 @@ export default function LandingPage({ onNavigate }) {
 
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-xs font-bold text-cyan-200 shadow-glow">
-              <Sparkles size={14} className="text-cyan-300" />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-xs font-extrabold text-cyan-300 shadow-glow">
+              <Sparkles size={14} className="text-cyan-400" />
               <span>Next-Gen AI Multi-Agent Platform</span>
             </div>
 
             <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.15]">
               Make Every Line of Code{" "}
-              <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
                 Safer & Cleaner.
               </span>
             </h1>
 
-            <p className="mt-6 text-base leading-relaxed text-slate-300 sm:text-lg">
+            <p className="mt-6 text-base leading-relaxed text-slate-300 sm:text-lg font-medium">
               Automated multi-agent platform for Python & Java codebases. Detect OWASP Top 10 vulnerabilities, review code quality, generate side-by-side AI remediations, and export Pull Request review reports in seconds.
             </p>
 

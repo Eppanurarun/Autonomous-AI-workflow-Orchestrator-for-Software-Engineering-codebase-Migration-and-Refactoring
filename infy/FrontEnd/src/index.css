@@ -283,12 +283,28 @@ html.light .text-transparent {
 
 html.light .bg-gradient-to-r.from-cyan-300.via-blue-400.to-indigo-400,
 html.light .bg-gradient-to-r.from-cyan-300.via-blue-400.to-indigo-500,
-html.light span.bg-gradient-to-r.from-cyan-300 {
-  background-image: linear-gradient(to right, #0284c7, #2563eb, #4f46e5) !important;
+html.light .bg-gradient-to-r.from-cyan-400.via-blue-500.to-indigo-500,
+html.light span.bg-gradient-to-r.from-cyan-300,
+html.light span.bg-gradient-to-r.from-cyan-400 {
+  background-image: linear-gradient(to right, #0284c7, #2563eb, #4338ca) !important;
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
   -webkit-background-clip: text !important;
+}
+
+/* Pill Badges in Light Mode */
+html.light div.rounded-full.border-cyan-400\/20,
+html.light div.rounded-full.border-cyan-400\/30,
+html.light div.rounded-full.bg-cyan-400\/10 {
+  background-color: #e0f2fe !important;
+  border-color: #0284c7 !important;
+  color: #0369a1 !important;
+}
+html.light div.rounded-full.border-cyan-400\/20 span,
+html.light div.rounded-full.border-cyan-400\/30 span {
+  color: #0369a1 !important;
+  font-weight: 800;
 }
 
 /* Background Overrides for Containers & Sections */
