@@ -345,58 +345,78 @@ html.light .code-editor {
   color: #0f172a !important;
 }
 
+/* Ensure react-simple-code-editor transparent textarea with sky caret */
 html.light .code-editor textarea {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
   caret-color: #0284c7 !important;
-  color: #0f172a !important;
 }
 
+/* Ensure pre, code, and plain text tokens inside react-simple-code-editor are 100% solid dark slate */
 html.light .code-editor pre,
-html.light .code-editor code {
+html.light .code-editor pre *,
+html.light .code-editor code,
+html.light .code-editor code * {
   color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  opacity: 1 !important;
 }
 
 /* Light Mode Prism Syntax Highlighting Tokens (GitHub Light Palette) */
+html.light .code-editor .token.comment,
 html.light .token.comment,
 html.light .token.prolog,
 html.light .token.doctype,
 html.light .token.cdata {
   color: #6a737d !important;
   font-style: italic;
+  -webkit-text-fill-color: #6a737d !important;
 }
 
+html.light .code-editor .token.keyword,
 html.light .token.keyword,
 html.light .token.atrule,
 html.light .token.selector-tag {
   color: #cf222e !important;
   font-weight: 600;
+  -webkit-text-fill-color: #cf222e !important;
 }
 
+html.light .code-editor .token.string,
 html.light .token.string,
 html.light .token.char,
 html.light .token.attr-value {
   color: #0550ae !important;
+  -webkit-text-fill-color: #0550ae !important;
 }
 
+html.light .code-editor .token.function,
 html.light .token.function,
 html.light .token.class-name {
   color: #8250df !important;
   font-weight: 600;
+  -webkit-text-fill-color: #8250df !important;
 }
 
+html.light .code-editor .token.number,
 html.light .token.number,
 html.light .token.boolean {
   color: #057a55 !important;
+  -webkit-text-fill-color: #057a55 !important;
 }
 
+html.light .code-editor .token.operator,
 html.light .token.operator,
 html.light .token.punctuation {
   color: #24292e !important;
+  -webkit-text-fill-color: #24292e !important;
 }
 
-html.light .token.property,
+html.light .code-editor .token.property,
 html.light .token.tag,
 html.light .token.constant {
   color: #116329 !important;
+  -webkit-text-fill-color: #116329 !important;
 }
 
 /* Light Mode Code Editor Line Numbers Gutter */
@@ -405,6 +425,7 @@ html.light div.select-none.border-r {
   border-right-color: #cbd5e1 !important;
   color: #475569 !important;
 }
+
 
 
 /* Interactive Code Showcase Light Mode Overrides */
