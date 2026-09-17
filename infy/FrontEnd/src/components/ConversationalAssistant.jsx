@@ -15,21 +15,21 @@ function parseInlineMarkdown(text) {
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
       return (
-        <strong key={i} className="font-semibold text-slate-100">
+        <strong key={i} className="font-bold text-slate-900 dark:text-slate-100">
           {part.slice(2, -2)}
         </strong>
       );
     }
     if (part.startsWith("`") && part.endsWith("`") && part.length >= 2) {
       return (
-        <code key={i} className="rounded bg-slate-800/80 px-1.5 py-0.5 font-mono text-[11px] text-cyan-300 border border-slate-700/60">
+        <code key={i} className="rounded bg-slate-200 dark:bg-slate-800/80 px-1.5 py-0.5 font-mono text-[11px] font-bold text-cyan-900 dark:text-cyan-300 border border-slate-300 dark:border-slate-700/60">
           {part.slice(1, -1)}
         </code>
       );
     }
     if (part.startsWith("*") && part.endsWith("*") && part.length >= 2 && !part.startsWith("**")) {
       return (
-        <em key={i} className="italic text-slate-300">
+        <em key={i} className="italic text-slate-800 dark:text-slate-300">
           {part.slice(1, -1)}
         </em>
       );
@@ -51,14 +51,14 @@ function FormattedText({ text }) {
 
         if (trimmed.startsWith("### ")) {
           return (
-            <h3 key={idx} className="font-bold text-sm text-cyan-300 mt-2 mb-1">
+            <h3 key={idx} className="font-bold text-sm text-cyan-800 dark:text-cyan-300 mt-2 mb-1">
               {parseInlineMarkdown(trimmed.slice(4))}
             </h3>
           );
         }
         if (trimmed.startsWith("#### ")) {
           return (
-            <h4 key={idx} className="font-semibold text-xs text-indigo-300 mt-1.5 mb-0.5">
+            <h4 key={idx} className="font-semibold text-xs text-indigo-800 dark:text-indigo-300 mt-1.5 mb-0.5">
               {parseInlineMarkdown(trimmed.slice(5))}
             </h4>
           );
@@ -66,8 +66,8 @@ function FormattedText({ text }) {
 
         if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
           return (
-            <div key={idx} className="flex gap-2 pl-2 text-slate-200">
-              <span className="text-cyan-400 font-bold select-none">•</span>
+            <div key={idx} className="flex gap-2 pl-2 text-slate-800 dark:text-slate-200">
+              <span className="text-cyan-700 dark:text-cyan-400 font-bold select-none">•</span>
               <span>{parseInlineMarkdown(trimmed.slice(2))}</span>
             </div>
           );
@@ -76,15 +76,15 @@ function FormattedText({ text }) {
         const numMatch = trimmed.match(/^(\d+)\.\s+(.*)/);
         if (numMatch) {
           return (
-            <div key={idx} className="flex gap-2 pl-2 text-slate-200">
-              <span className="text-cyan-400 font-bold select-none">{numMatch[1]}.</span>
+            <div key={idx} className="flex gap-2 pl-2 text-slate-800 dark:text-slate-200">
+              <span className="text-cyan-700 dark:text-cyan-400 font-bold select-none">{numMatch[1]}.</span>
               <span>{parseInlineMarkdown(numMatch[2])}</span>
             </div>
           );
         }
 
         return (
-          <p key={idx} className="text-slate-200 leading-relaxed">
+          <p key={idx} className="text-slate-800 dark:text-slate-200 leading-relaxed font-normal">
             {parseInlineMarkdown(line)}
           </p>
         );
@@ -114,9 +114,9 @@ function MessageContent({ content }) {
           const isCopied = copiedCode === index;
 
           return (
-            <div key={index} className="my-2 overflow-hidden rounded-xl border border-slate-700/80 bg-slate-950/90 shadow-sm">
-              <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900/80 px-3 py-1.5 font-mono text-[10px] text-slate-400">
-                <span className="uppercase text-cyan-400 font-bold">{codeLang}</span>
+            <div key={index} className="my-2 overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700/80 bg-slate-900 dark:bg-slate-950/90 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-700 dark:border-slate-800 bg-slate-800/90 dark:bg-slate-900/80 px-3 py-1.5 font-mono text-[10px] text-slate-300 dark:text-slate-400">
+                <span className="uppercase text-cyan-300 dark:text-cyan-400 font-bold">{codeLang}</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -124,13 +124,13 @@ function MessageContent({ content }) {
                     setCopiedCode(index);
                     setTimeout(() => setCopiedCode(null), 2000);
                   }}
-                  className="inline-flex items-center gap-1 rounded bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-200 hover:bg-slate-700 transition"
+                  className="inline-flex items-center gap-1 rounded bg-slate-700 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-100 hover:bg-slate-600 dark:hover:bg-slate-700 transition"
                 >
                   {isCopied ? <Check size={11} className="text-emerald-300" /> : <Copy size={11} />}
                   <span>{isCopied ? "Copied!" : "Copy"}</span>
                 </button>
               </div>
-              <pre className="overflow-x-auto p-3 font-mono text-[11px] text-slate-200 leading-relaxed">
+              <pre className="overflow-x-auto p-3 font-mono text-[11px] text-slate-100 dark:text-slate-200 leading-relaxed">
                 <code>{codeText.trim()}</code>
               </pre>
             </div>
@@ -227,22 +227,22 @@ export default function ConversationalAssistant({ analysisId, language = "python
       id="assistant-drawer"
       role="region"
       aria-label="Conversational Code Assistant"
-      className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-slate-700/80 bg-[#080e1a]/95 backdrop-blur-xl shadow-2xl transition-all duration-300 max-w-full sm:max-w-lg overflow-x-hidden"
+      className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-slate-300 dark:border-slate-700/80 bg-white dark:bg-[#080e1a]/95 text-slate-900 dark:text-slate-100 backdrop-blur-xl shadow-2xl transition-all duration-300 max-w-full sm:max-w-lg overflow-x-hidden"
     >
       {/* Drawer Header */}
-      <div className="flex items-center justify-between border-b border-slate-800/80 px-5 py-4 bg-slate-900/60">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80 px-5 py-4 bg-slate-50 dark:bg-slate-900/60">
         <div className="flex items-center gap-3">
-          <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 text-cyan-300 border border-cyan-400/30">
+          <div className="grid h-9 w-9 place-items-center rounded-xl bg-cyan-100 dark:bg-gradient-to-tr dark:from-cyan-500/20 dark:to-blue-500/20 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-400/30">
             <Bot size={20} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-slate-100">Conversational Code Assistant</h3>
-              <span className="rounded bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-cyan-300 border border-cyan-500/20">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Conversational Code Assistant</h3>
+              <span className="rounded bg-cyan-100 dark:bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-bold text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-500/20">
                 RAG Grounded
               </span>
             </div>
-            <p className="text-xs text-slate-400">Context: {language ? language.toUpperCase() : "Python"}</p>
+            <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Context: {language ? language.toUpperCase() : "Python"}</p>
           </div>
         </div>
 
@@ -252,7 +252,7 @@ export default function ConversationalAssistant({ analysisId, language = "python
             onClick={handleClear}
             title="Clear Chat"
             aria-label="Clear chat messages"
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition"
+            className="rounded-lg p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 transition"
           >
             <Trash2 size={16} />
           </button>
@@ -260,7 +260,7 @@ export default function ConversationalAssistant({ analysisId, language = "python
             type="button"
             onClick={onClose}
             aria-label="Close Assistant drawer"
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition"
+            className="rounded-lg p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 transition"
           >
             <X size={18} />
           </button>
@@ -268,7 +268,7 @@ export default function ConversationalAssistant({ analysisId, language = "python
       </div>
 
       {/* Messages Thread */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-transparent">
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -277,8 +277,8 @@ export default function ConversationalAssistant({ analysisId, language = "python
             <div
               className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg ${
                 msg.role === "user"
-                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
-                  : "bg-slate-800 text-indigo-300 border border-slate-700"
+                  ? "bg-cyan-600 text-white dark:bg-cyan-500/20 dark:text-cyan-300 border border-cyan-600 dark:border-cyan-500/30"
+                  : "bg-slate-200 dark:bg-slate-800 text-indigo-800 dark:text-indigo-300 border border-slate-300 dark:border-slate-700"
               }`}
             >
               {msg.role === "user" ? <User size={15} /> : <Sparkles size={15} />}
@@ -288,8 +288,8 @@ export default function ConversationalAssistant({ analysisId, language = "python
               <div
                 className={`rounded-2xl px-4 py-3 text-xs leading-relaxed ${
                   msg.role === "user"
-                    ? "bg-cyan-600/20 text-cyan-100 border border-cyan-500/30 rounded-tr-none"
-                    : "bg-slate-900/90 text-slate-200 border border-slate-800 rounded-tl-none"
+                    ? "bg-gradient-to-r from-cyan-600 to-blue-600 text-white dark:bg-cyan-600/20 dark:text-cyan-100 border border-cyan-500/30 rounded-tr-none font-medium shadow-sm"
+                    : "bg-white dark:bg-slate-900/90 text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-800 rounded-tl-none shadow-sm"
                 }`}
               >
                 <MessageContent content={msg.content} />
@@ -297,29 +297,29 @@ export default function ConversationalAssistant({ analysisId, language = "python
 
               {/* RAG Citations */}
               {msg.sources && msg.sources.length > 0 && (
-                <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-2.5">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/60 p-2.5 shadow-sm">
                   <button
                     type="button"
                     onClick={() => toggleSourceView(idx)}
                     aria-label="Toggle RAG citations view"
-                    className="flex w-full items-center justify-between text-[11px] font-semibold text-slate-400 hover:text-cyan-300"
+                    className="flex w-full items-center justify-between text-[11px] font-bold text-slate-700 dark:text-slate-400 hover:text-cyan-700 dark:hover:text-cyan-300"
                   >
                     <span className="flex items-center gap-1.5">
-                      <BookOpen size={12} className="text-cyan-400" />
+                      <BookOpen size={12} className="text-cyan-700 dark:text-cyan-400" />
                       {msg.sources.length} RAG Knowledge Base Citation(s)
                     </span>
                     {showSources[idx] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                   </button>
 
                   {showSources[idx] && (
-                    <div className="mt-2 space-y-1.5 pt-2 border-t border-slate-800">
+                    <div className="mt-2 space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
                       {msg.sources.map((src, sIdx) => (
-                        <div key={sIdx} className="rounded bg-slate-900 p-2 text-[10px]">
-                          <div className="flex items-center justify-between font-bold text-cyan-300">
+                        <div key={sIdx} className="rounded bg-slate-100 dark:bg-slate-900 p-2 text-[10px] border border-slate-200 dark:border-slate-800">
+                          <div className="flex items-center justify-between font-bold text-cyan-800 dark:text-cyan-300">
                             <span>{src.title}</span>
                             <span className="text-slate-500">{src.category}</span>
                           </div>
-                          <p className="mt-1 text-slate-400 line-clamp-2">{src.snippet}</p>
+                          <p className="mt-1 text-slate-700 dark:text-slate-400 line-clamp-2">{src.snippet}</p>
                         </div>
                       ))}
                     </div>
@@ -331,11 +331,11 @@ export default function ConversationalAssistant({ analysisId, language = "python
         ))}
 
         {loading && (
-          <div className="flex items-center gap-3 text-slate-400">
-            <div className="grid h-8 w-8 place-items-center rounded-lg bg-slate-800 text-indigo-300 border border-slate-700">
+          <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
+            <div className="grid h-8 w-8 place-items-center rounded-lg bg-slate-200 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-slate-300 dark:border-slate-700">
               <Sparkles size={15} className="animate-spin" />
             </div>
-            <div className="rounded-2xl rounded-tl-none bg-slate-900 px-4 py-2.5 text-xs text-slate-400 border border-slate-800">
+            <div className="rounded-2xl rounded-tl-none bg-white dark:bg-slate-900 px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-400 border border-slate-200 dark:border-slate-800 shadow-sm">
               Consulting RAG Knowledge Base & generating answer...
             </div>
           </div>
@@ -344,8 +344,8 @@ export default function ConversationalAssistant({ analysisId, language = "python
       </div>
 
       {/* Suggested Prompts */}
-      <div className="border-t border-slate-800/80 bg-slate-900/30 px-4 py-2 max-w-full overflow-hidden">
-        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Suggested Questions</p>
+      <div className="border-t border-slate-200 dark:border-slate-800/80 bg-slate-100/90 dark:bg-slate-900/30 px-4 py-2.5 max-w-full overflow-hidden">
+        <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Suggested Questions</p>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none max-w-full flex-nowrap">
           {(analysisId && analysisId !== "—" ? [
             "What are all findings in this file?",
@@ -358,7 +358,7 @@ export default function ConversationalAssistant({ analysisId, language = "python
               type="button"
               onClick={() => handleSend(prompt)}
               aria-label={`Ask suggested question: ${prompt}`}
-              className="shrink-0 rounded-lg border border-slate-700/60 bg-slate-800/40 px-2.5 py-1 text-[11px] text-slate-300 hover:border-cyan-400/40 hover:bg-cyan-500/10 hover:text-cyan-200 transition"
+              className="shrink-0 rounded-lg border border-slate-300 dark:border-slate-700/60 bg-white dark:bg-slate-800/40 px-2.5 py-1 text-[11px] font-semibold text-slate-800 dark:text-slate-200 hover:border-cyan-500 dark:hover:border-cyan-400/40 hover:bg-cyan-50 dark:hover:bg-cyan-500/10 hover:text-cyan-800 dark:hover:text-cyan-200 shadow-sm transition"
             >
               {prompt}
             </button>
@@ -367,7 +367,7 @@ export default function ConversationalAssistant({ analysisId, language = "python
       </div>
 
       {/* Input Box */}
-      <div className="border-t border-slate-800 p-4 bg-slate-900/70">
+      <div className="border-t border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900/70">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -381,13 +381,13 @@ export default function ConversationalAssistant({ analysisId, language = "python
             onChange={(e) => setInputQuery(e.target.value)}
             aria-label="Ask assistant a coding question"
             placeholder="Ask anything about flagged issues, fixes, OWASP rules..."
-            className="flex-1 rounded-xl border border-slate-700/80 bg-slate-950 px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+            className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-950 px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition"
           />
           <button
             type="submit"
             disabled={!inputQuery.trim() || loading}
             aria-label="Send message"
-            className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="btn-gradient-primary grid h-9 w-9 shrink-0 place-items-center rounded-xl transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Send size={15} />
           </button>

@@ -599,11 +599,37 @@ html.light .fixed.inset-0 .bg-slate-950 {
   box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.2) !important;
 }
 
-/* Chat Assistant Drawer Light Mode Override */
+/* Chat Assistant Drawer Light Mode Scoped Styles */
+html.light #assistant-drawer,
 html.light .fixed.inset-y-0.right-0 {
   background-color: #ffffff !important;
   border-left-color: #cbd5e1 !important;
   color: #0f172a !important;
+  box-shadow: -10px 0 30px rgba(15, 23, 42, 0.08) !important;
+}
+
+html.light #assistant-drawer .bg-slate-900\/60,
+html.light #assistant-drawer .bg-slate-900\/70,
+html.light #assistant-drawer .bg-slate-900\/90,
+html.light #assistant-drawer .bg-slate-900,
+html.light #assistant-drawer .bg-slate-950\/60,
+html.light #assistant-drawer [class*="bg-[#080e1a]"] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.light #assistant-drawer .text-slate-100,
+html.light #assistant-drawer .text-slate-200,
+html.light #assistant-drawer .text-slate-300,
+html.light #assistant-drawer p,
+html.light #assistant-drawer span {
+  color: #0f172a !important;
+}
+
+html.light #assistant-drawer .text-slate-400,
+html.light #assistant-drawer .text-slate-500 {
+  color: #475569 !important;
 }
 
 /* Chat Bubble Overrides */
@@ -612,6 +638,14 @@ html.light .bg-slate-800\/70 {
   background-color: #f1f5f9 !important;
   border-color: #e2e8f0 !important;
   color: #0f172a !important;
+}
+
+/* Escaped Opacity Classes in Light Mode */
+html.light .text-cyan-100\/90,
+html.light .text-cyan-200\/90,
+html.light .text-cyan-300\/90,
+html.light .text-cyan-400\/90 {
+  color: #0369a1 !important;
 }
 
 /* ResultCard & Inspection Overview Light Mode Engine */

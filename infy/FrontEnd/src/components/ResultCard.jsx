@@ -551,12 +551,12 @@ export default function ResultCard({ result, error, authUser, onOpenAuth }) {
                         )}
 
                         {item.recommendation && (
-                          <div className="mt-2.5 rounded-lg border border-cyan-400/15 bg-cyan-400/5 p-2.5 text-xs text-cyan-200/90 leading-relaxed">
-                            <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-cyan-300 mb-1">
-                              <Lightbulb size={12} />
+                          <div className="mt-2.5 rounded-lg border border-cyan-300/40 dark:border-cyan-400/15 bg-cyan-500/10 dark:bg-cyan-400/5 p-3 text-xs leading-relaxed">
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-cyan-800 dark:text-cyan-300 mb-1.5">
+                              <Lightbulb size={13} className="text-cyan-600 dark:text-cyan-300" />
                               <span>RAG Knowledge Base Guidance</span>
                             </div>
-                            <p className="whitespace-pre-line">{item.recommendation}</p>
+                            <p className="whitespace-pre-line text-slate-900 dark:text-cyan-100 font-semibold">{item.recommendation}</p>
                           </div>
                         )}
                       </>
