@@ -1,6 +1,6 @@
-import { Home, BarChart3, Clock3, Code2, ShieldCheck, TerminalSquare, ShieldAlert, User, LogIn, LogOut } from "lucide-react";
+import { Home, BarChart3, Clock3, Code2, ShieldCheck, TerminalSquare, ShieldAlert, User, LogIn, LogOut, Sun, Moon } from "lucide-react";
 
-export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, onLogout }) {
+export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, onLogout, theme, onToggleTheme }) {
   const navItems = [
     { id: "landing", label: "Home", icon: Home },
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -52,7 +52,24 @@ export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, o
           })}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Light / Dark Mode Toggle Button */}
+          {onToggleTheme && (
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              aria-label="Toggle Theme"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700/80 bg-slate-900/80 text-slate-300 transition hover:bg-slate-800 hover:text-white shadow-sm"
+              title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
+            >
+              {theme === "light" ? (
+                <Moon size={16} className="text-indigo-500" />
+              ) : (
+                <Sun size={16} className="text-amber-400" />
+              )}
+            </button>
+          )}
+
           {authUser ? (
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-1.5 text-xs font-semibold text-slate-200">
