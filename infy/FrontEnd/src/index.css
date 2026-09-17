@@ -264,6 +264,30 @@ html.light input, html.light textarea, html.light select {
   color: #0f172a !important;
 }
 
+/* CTA Footer Banner Light Mode Override */
+html.light .bg-gradient-to-r.from-cyan-950\/60.via-slate-950.to-indigo-950\/60 {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.96), rgba(241, 245, 249, 0.96), rgba(255, 255, 255, 0.96)) !important;
+  border-color: rgba(203, 213, 225, 0.9) !important;
+  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.08) !important;
+}
+
+html.light .bg-slate-800 {
+  background-color: rgba(226, 232, 240, 0.85) !important;
+  color: #0369a1 !important;
+}
+
+/* Page Section Backgrounds in Light Mode */
+html.light main,
+html.light section,
+html.light .min-h-screen {
+  background-color: #f8fafc !important;
+}
+
+/* Secondary Buttons & Borders in Light Mode */
+html.light .border-slate-700 {
+  border-color: #cbd5e1 !important;
+}
+
 /* Code Editor Light Theme */
 html.light .code-editor {
   background: #ffffff !important;
@@ -278,6 +302,7 @@ html.light .code-editor textarea {
 html.light ::-webkit-scrollbar-track { background: #f1f5f9; }
 html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
 
 
 
