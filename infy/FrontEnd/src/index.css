@@ -58,49 +58,125 @@ button, input, textarea { font: inherit; }
 
 .soft-pulse { animation: soft-pulse 3s ease-in-out infinite; }
 
-/* Light Mode Overrides */
+/* ==========================================
+   ✨ ULTRA-PREMIUM LIGHT MODE THEME ENGINE
+   ========================================== */
 html.light {
   color-scheme: light;
-  background: #f8fafc;
+  background-color: #f8fafc;
 }
 
 html.light body,
 body.light-mode {
   background:
-    radial-gradient(circle at 15% 10%, rgba(14, 165, 233, .08), transparent 30%),
-    radial-gradient(circle at 85% 0%, rgba(99, 102, 241, .07), transparent 28%),
-    #f1f5f9 !important;
+    radial-gradient(circle at 12% 8%, rgba(14, 165, 233, 0.07), transparent 32%),
+    radial-gradient(circle at 88% 5%, rgba(99, 102, 241, 0.06), transparent 30%),
+    radial-gradient(circle at 50% 90%, rgba(20, 184, 166, 0.04), transparent 45%),
+    #f8fafc !important;
   color: #0f172a !important;
 }
 
+/* Glassmorphic Cards & Elevated Surfaces */
 html.light .glass {
-  background: rgba(255, 255, 255, 0.85) !important;
-  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
   color: #0f172a !important;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03) !important;
+  backdrop-filter: blur(20px) !important;
 }
 
+/* Crisp Technical Grid Pattern */
 html.light .grid-bg {
   background-image:
-    linear-gradient(rgba(51, 65, 85, .06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(51, 65, 85, .06) 1px, transparent 1px) !important;
+    linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.12) 1px, transparent 1px) !important;
+  background-size: 32px 32px !important;
 }
 
+/* Premium Navigation Header */
 html.light header {
-  background: rgba(255, 255, 255, 0.92) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
   border-bottom: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.04) !important;
 }
 
-html.light header p.text-white {
+html.light header p.text-white,
+html.light header button p.text-white {
   color: #0f172a !important;
+}
+
+html.light header p.text-slate-500 {
+  color: #64748b !important;
 }
 
 html.light header nav {
-  background: rgba(241, 245, 249, 0.8) !important;
+  background: rgba(241, 245, 249, 0.9) !important;
   border: 1px solid rgba(203, 213, 225, 0.8) !important;
 }
 
-html.light ::-webkit-scrollbar-track { background: #e2e8f0; }
-html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+html.light header nav button {
+  color: #475569 !important;
+}
+
+html.light header nav button:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #0284c7 !important;
+}
+
+/* Light Mode Card Dividers & Borders */
+html.light .divide-slate-800\/70 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(226, 232, 240, 0.8) !important;
+}
+
+html.light .border-slate-800,
+html.light .border-slate-800\/80,
+html.light .border-slate-700\/80 {
+  border-color: rgba(226, 232, 240, 0.9) !important;
+}
+
+html.light .bg-slate-950\/30,
+html.light .bg-slate-950\/40,
+html.light .bg-slate-950\/70,
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/80 {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+}
+
+/* Typography & Subtexts */
+html.light .text-slate-100,
+html.light .text-slate-200 {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-300,
+html.light .text-slate-400 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Input Fields & Textareas */
+html.light input, html.light textarea, html.light select {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Code Editor Light Theme */
+html.light .code-editor {
+  background: #ffffff !important;
+}
+
+html.light .code-editor textarea {
+  caret-color: #0284c7 !important;
+  color: #0f172a !important;
+}
+
+/* Light Scrollbars */
+html.light ::-webkit-scrollbar-track { background: #f1f5f9; }
+html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
 
