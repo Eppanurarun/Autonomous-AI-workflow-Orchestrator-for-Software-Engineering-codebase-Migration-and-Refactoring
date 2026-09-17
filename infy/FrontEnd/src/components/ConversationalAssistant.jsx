@@ -114,9 +114,9 @@ function MessageContent({ content }) {
           const isCopied = copiedCode === index;
 
           return (
-            <div key={index} className="my-2 overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700/80 bg-slate-900 dark:bg-slate-950/90 shadow-sm">
-              <div className="flex items-center justify-between border-b border-slate-700 dark:border-slate-800 bg-slate-800/90 dark:bg-slate-900/80 px-3 py-1.5 font-mono text-[10px] text-slate-300 dark:text-slate-400">
-                <span className="uppercase text-cyan-300 dark:text-cyan-400 font-bold">{codeLang}</span>
+            <div key={index} className="my-2 overflow-hidden rounded-xl border border-slate-700/80 bg-slate-900 dark:bg-slate-950/90 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-700 dark:border-slate-800 bg-slate-800 px-3 py-1.5 font-mono text-[10px]">
+                <span className="uppercase font-extrabold tracking-wider text-cyan-300 dark:text-cyan-400">{codeLang}</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -124,13 +124,13 @@ function MessageContent({ content }) {
                     setCopiedCode(index);
                     setTimeout(() => setCopiedCode(null), 2000);
                   }}
-                  className="inline-flex items-center gap-1 rounded bg-slate-700 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-100 hover:bg-slate-600 dark:hover:bg-slate-700 transition"
+                  className="inline-flex items-center gap-1 rounded bg-slate-700 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-100 dark:text-slate-200 hover:bg-slate-600 dark:hover:bg-slate-700 transition"
                 >
-                  {isCopied ? <Check size={11} className="text-emerald-300" /> : <Copy size={11} />}
-                  <span>{isCopied ? "Copied!" : "Copy"}</span>
+                  {isCopied ? <Check size={11} className="text-emerald-300" /> : <Copy size={11} className="text-slate-300" />}
+                  <span className="text-slate-100">{isCopied ? "Copied!" : "Copy"}</span>
                 </button>
               </div>
-              <pre className="overflow-x-auto p-3 font-mono text-[11px] text-slate-100 dark:text-slate-200 leading-relaxed">
+              <pre className="overflow-x-auto p-3 font-mono text-[11px] text-slate-100 dark:text-slate-200 leading-relaxed bg-slate-950/90">
                 <code>{codeText.trim()}</code>
               </pre>
             </div>

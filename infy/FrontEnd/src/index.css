@@ -632,6 +632,27 @@ html.light #assistant-drawer .text-slate-500 {
   color: #475569 !important;
 }
 
+/* Code Block Header High-Contrast Engine (Language Tags & Copy Buttons) */
+.font-mono .uppercase,
+.font-mono .uppercase.text-cyan-300,
+.font-mono .uppercase.text-cyan-400,
+#assistant-drawer .font-mono span.uppercase,
+html.light #assistant-drawer .font-mono span.uppercase {
+  color: #38bdf8 !important;
+  -webkit-text-fill-color: #38bdf8 !important;
+  font-weight: 800 !important;
+}
+
+.font-mono button span,
+.font-mono button svg,
+#assistant-drawer .font-mono button span,
+#assistant-drawer .font-mono button svg,
+html.light #assistant-drawer .font-mono button span,
+html.light #assistant-drawer .font-mono button svg {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+
 /* Chat Bubble Overrides */
 html.light .bg-slate-800\/60,
 html.light .bg-slate-800\/70 {
