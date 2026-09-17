@@ -142,10 +142,27 @@ html.light .bg-slate-900\/80 {
   background-color: rgba(248, 250, 252, 0.9) !important;
 }
 
-/* Typography & Subtexts */
+/* Universal Light Mode Typography & Color Overrides */
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light h5,
+html.light h6,
+html.light h1.text-white,
+html.light h2.text-white,
+html.light h3.text-white,
+html.light h4.text-white,
+html.light p.text-white,
+html.light span.text-white,
+html.light div.text-white,
+html.light .text-white {
+  color: #0f172a !important;
+}
+
 html.light .text-slate-100,
 html.light .text-slate-200 {
-  color: #0f172a !important;
+  color: #1e293b !important;
 }
 
 html.light .text-slate-300,
@@ -155,6 +172,30 @@ html.light .text-slate-400 {
 
 html.light .text-slate-500 {
   color: #64748b !important;
+}
+
+/* Background Overrides for Containers & Sections */
+html.light main,
+html.light section,
+html.light div.grid-bg {
+  color: #0f172a !important;
+}
+
+html.light .bg-slate-950,
+html.light .bg-slate-950\/30,
+html.light .bg-slate-950\/40,
+html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/70,
+html.light .bg-slate-950\/80,
+html.light .bg-slate-950\/90,
+html.light .bg-slate-900,
+html.light .bg-slate-900\/50,
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/80,
+html.light .bg-\[\#050b14\],
+html.light .bg-\[\#07101c\],
+html.light .bg-\[\#09111e\] {
+  background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Input Fields & Textareas */
@@ -178,5 +219,6 @@ html.light .code-editor textarea {
 html.light ::-webkit-scrollbar-track { background: #f1f5f9; }
 html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
 
 

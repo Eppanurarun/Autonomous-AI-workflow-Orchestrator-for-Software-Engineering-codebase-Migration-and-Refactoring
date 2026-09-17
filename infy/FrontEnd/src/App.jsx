@@ -244,7 +244,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050b14] text-slate-100 transition-colors duration-300">
+    <div className={`min-h-screen transition-colors duration-300 ${theme === 'light' ? 'bg-slate-50 text-slate-900' : 'bg-[#050b14] text-slate-100'}`}>
       <Navbar
         activePage={activePage}
         onNavigate={navigate}
