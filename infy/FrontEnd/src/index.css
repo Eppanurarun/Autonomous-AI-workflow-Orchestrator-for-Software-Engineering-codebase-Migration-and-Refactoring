@@ -170,8 +170,67 @@ html.light .text-slate-400 {
   color: #334155 !important;
 }
 
-html.light .text-slate-500 {
-  color: #64748b !important;
+html.light .text-slate-500,
+html.light .text-slate-600 {
+  color: #475569 !important;
+}
+
+/* Light Mode Accent Colors (Deepened for Crisp Contrast against White) */
+html.light .text-cyan-200,
+html.light .text-cyan-300,
+html.light .text-cyan-400 {
+  color: #0369a1 !important;
+}
+
+html.light .text-blue-300,
+html.light .text-blue-400 {
+  color: #1d4ed8 !important;
+}
+
+html.light .text-indigo-300,
+html.light .text-indigo-400 {
+  color: #4338ca !important;
+}
+
+html.light .text-emerald-300,
+html.light .text-emerald-400 {
+  color: #047857 !important;
+}
+
+html.light .text-rose-300,
+html.light .text-rose-400 {
+  color: #be123c !important;
+}
+
+html.light .text-amber-300,
+html.light .text-amber-400 {
+  color: #b45309 !important;
+}
+
+/* Badge Backgrounds in Light Mode */
+html.light .bg-cyan-400\/10,
+html.light .bg-cyan-500\/10 {
+  background-color: rgba(3, 105, 161, 0.12) !important;
+}
+
+html.light .bg-emerald-400\/10,
+html.light .bg-emerald-500\/10 {
+  background-color: rgba(4, 120, 87, 0.12) !important;
+}
+
+html.light .bg-amber-400\/10,
+html.light .bg-amber-500\/10 {
+  background-color: rgba(180, 83, 9, 0.12) !important;
+}
+
+html.light .bg-rose-400\/10,
+html.light .bg-rose-500\/10 {
+  background-color: rgba(190, 18, 60, 0.12) !important;
+}
+
+/* Hero Section Gradient Text in Light Mode */
+html.light .bg-gradient-to-r.from-cyan-300.via-blue-400.to-indigo-400 {
+  background-image: linear-gradient(to right, #0284c7, #2563eb, #4f46e5) !important;
 }
 
 /* Background Overrides for Containers & Sections */
@@ -195,7 +254,7 @@ html.light .bg-slate-900\/80,
 html.light .bg-\[\#050b14\],
 html.light .bg-\[\#07101c\],
 html.light .bg-\[\#09111e\] {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.92) !important;
 }
 
 /* Input Fields & Textareas */
@@ -219,6 +278,7 @@ html.light .code-editor textarea {
 html.light ::-webkit-scrollbar-track { background: #f1f5f9; }
 html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
 
 
 
