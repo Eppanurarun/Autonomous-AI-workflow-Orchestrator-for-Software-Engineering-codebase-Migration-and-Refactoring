@@ -301,55 +301,48 @@ html.light .bg-\[\#09111e\] {
   background-color: rgba(255, 255, 255, 0.92) !important;
 }
 
-/* Input Fields & Textareas */
-html.light input, html.light textarea, html.light select {
+/* Input Fields & Textareas (Excluding CodeEditor Textarea) */
+html.light input,
+html.light textarea:not(.code-editor textarea):not([class*="textarea"]),
+html.light select {
   background-color: #ffffff !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
 }
 
-/* CTA Footer Banner Light Mode Override */
-html.light .bg-gradient-to-r.from-cyan-950\/60.via-slate-950.to-indigo-950\/60 {
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.96), rgba(241, 245, 249, 0.96), rgba(255, 255, 255, 0.96)) !important;
-  border-color: rgba(203, 213, 225, 0.9) !important;
-  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.08) !important;
-}
-
-html.light .bg-slate-800 {
-  background-color: rgba(226, 232, 240, 0.85) !important;
-  color: #0369a1 !important;
-}
-
-/* Page Section Backgrounds in Light Mode */
-html.light main,
-html.light section,
-html.light .min-h-screen {
-  background-color: #f8fafc !important;
-}
-
-/* Secondary Buttons & Borders in Light Mode */
-html.light .border-slate-700 {
-  border-color: #cbd5e1 !important;
-}
-
-/* --- Code Editor Base & Prism.js High-Contrast Light Theme --- */
+/* --- CODE EDITOR TRANSPARENCY & VISIBILITY ENGINE --- */
 .code-editor textarea,
 .code-editor pre,
-.code-editor code {
-  color: #e2e8f0;
+.code-editor code,
+.code-editor [class*="textarea"],
+.code-editor [class*="pre"] {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+html.light .code-editor textarea,
+html.light .code-editor [class*="textarea"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  caret-color: #0284c7 !important;
+}
+
+:root:not(.light) .code-editor textarea,
+:root:not(.light) .code-editor [class*="textarea"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  caret-color: #67e8f9 !important;
 }
 
 html.light .code-editor {
   background: #ffffff !important;
+  background-color: #ffffff !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
-}
-
-/* Ensure react-simple-code-editor transparent textarea with sky caret */
-html.light .code-editor textarea {
-  color: transparent !important;
-  -webkit-text-fill-color: transparent !important;
-  caret-color: #0284c7 !important;
 }
 
 /* Ensure pre, code, and plain text tokens inside react-simple-code-editor are 100% solid dark slate */
