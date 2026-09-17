@@ -27,17 +27,17 @@ export default function LandingPage({ onNavigate }) {
         <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-cyan-500/10 blur-[120px]" />
         <div className="pointer-events-none absolute top-1/3 -right-40 h-80 w-80 rounded-full bg-indigo-500/10 blur-[100px]" />
 
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        <div className="relative z-10 mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             {/* Top Pill Badge */}
-            <div className="hero-pill-badge-solid mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-extrabold">
-              <Sparkles size={14} />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/15 bg-cyan-400/5 px-4 py-2 text-xs font-extrabold text-cyan-200">
+              <Sparkles size={14} className="text-cyan-300" />
               <span>Next-Gen AI Multi-Agent Platform</span>
             </div>
 
             {/* H1 Headline */}
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl leading-[1.15]">
-              <span className="text-slate-950 dark:text-white">Make Every Line of Code </span>
+            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.15]">
+              Make Every Line of Code{" "}
               <span className="bg-gradient-to-r from-cyan-700 via-blue-700 to-indigo-800 dark:from-cyan-300 dark:via-blue-400 dark:to-indigo-300 bg-clip-text text-transparent">
                 Safer & Cleaner.
               </span>
