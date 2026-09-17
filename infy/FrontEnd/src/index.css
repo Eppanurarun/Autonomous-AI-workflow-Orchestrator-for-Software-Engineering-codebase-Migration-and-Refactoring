@@ -330,10 +330,80 @@ html.light pre.bg-slate-950\/90.border-emerald-500\/20 {
   border-color: rgba(16, 185, 129, 0.3) !important;
 }
 
+/* Dashboard Hero Banner & Gradient Cards Light Mode Overrides */
+html.light .from-cyan-400\/\[0\.08\],
+html.light .via-slate-950\/60,
+html.light .to-indigo-500\/\[0\.08\],
+html.light section.bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, rgba(236, 254, 255, 0.95), rgba(248, 250, 252, 0.95), rgba(238, 242, 255, 0.95)) !important;
+  border-color: rgba(203, 213, 225, 0.9) !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05) !important;
+}
+
+html.light button.bg-slate-950\/50,
+html.light button.bg-slate-950\/60,
+html.light .bg-slate-950\/50 {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light button.bg-slate-950\/50:hover,
+html.light button.bg-slate-950\/60:hover {
+  background-color: #f1f5f9 !important;
+  color: #0284c7 !important;
+  border-color: #94a3b8 !important;
+}
+
+/* Metric Icon Boxes in Light Mode */
+html.light .bg-slate-800\/80,
+html.light .bg-slate-800 {
+  background-color: rgba(241, 245, 249, 0.95) !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  color: #0369a1 !important;
+}
+
+/* Modal Dialog Backdrops & Content Cards */
+html.light .fixed.inset-0.z-50 {
+  color: #0f172a !important;
+}
+
+html.light .fixed.inset-0 .bg-slate-950\/80,
+html.light .fixed.inset-0 .bg-black\/60 {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+html.light .fixed.inset-0 .glass,
+html.light .fixed.inset-0 .bg-slate-900,
+html.light .fixed.inset-0 .bg-slate-950 {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.2) !important;
+}
+
+/* Chat Assistant Drawer Light Mode Override */
+html.light .fixed.inset-y-0.right-0 {
+  background-color: #ffffff !important;
+  border-left-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Chat Bubble Overrides */
+html.light .bg-slate-800\/60,
+html.light .bg-slate-800\/70 {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
 /* Light Scrollbars */
 html.light ::-webkit-scrollbar-track { background: #f1f5f9; }
 html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
 
 
 
