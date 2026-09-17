@@ -298,10 +298,43 @@ html.light .code-editor textarea {
   color: #0f172a !important;
 }
 
+/* Interactive Code Showcase Light Mode Overrides */
+html.light .text-rose-200 {
+  color: #9f1239 !important;
+}
+
+html.light .text-emerald-200 {
+  color: #065f46 !important;
+}
+
+html.light .bg-rose-950\/20 {
+  background-color: rgba(255, 241, 242, 0.9) !important;
+  border-color: rgba(253, 164, 175, 0.6) !important;
+}
+
+html.light .bg-emerald-950\/20 {
+  background-color: rgba(236, 253, 245, 0.9) !important;
+  border-color: rgba(110, 231, 183, 0.6) !important;
+}
+
+html.light pre.bg-slate-950\/90 {
+  background-color: #ffffff !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light pre.bg-slate-950\/90.border-rose-500\/20 {
+  border-color: rgba(244, 63, 94, 0.3) !important;
+}
+
+html.light pre.bg-slate-950\/90.border-emerald-500\/20 {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
 /* Light Scrollbars */
 html.light ::-webkit-scrollbar-track { background: #f1f5f9; }
 html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
 
 
 
