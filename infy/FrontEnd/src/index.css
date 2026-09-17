@@ -292,31 +292,23 @@ html.light span.bg-gradient-to-r {
   -webkit-background-clip: text !important;
 }
 
-/* Pill Badges in Light Mode */
-html.light div.inline-flex.rounded-full {
-  background-color: #e0f2fe !important;
-  border-color: #0284c7 !important;
-  color: #0369a1 !important;
+/* Premium High-Contrast Pill Badges for All Themes */
+html.light div.inline-flex.rounded-full,
+html.dark div.inline-flex.rounded-full,
+html:not(.light) div.inline-flex.rounded-full {
+  background-color: #0b1728 !important;
+  border: 1px solid #0284c7 !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15) !important;
 }
 
 html.light div.inline-flex.rounded-full span,
 html.light div.inline-flex.rounded-full p,
-html.light div.inline-flex.rounded-full svg {
-  color: #0369a1 !important;
-  font-weight: 800 !important;
-}
-
-/* Dark Mode Pill Badges & High Contrast Hero Controls */
-html.dark div.inline-flex.rounded-full,
-html:not(.light) div.inline-flex.rounded-full {
-  background-color: rgba(6, 182, 212, 0.2) !important;
-  border-color: rgba(34, 211, 238, 0.5) !important;
-  color: #67e8f9 !important;
-}
-
+html.light div.inline-flex.rounded-full svg,
 html.dark div.inline-flex.rounded-full span,
-html:not(.light) div.inline-flex.rounded-full span {
-  color: #67e8f9 !important;
+html.dark div.inline-flex.rounded-full p,
+html.dark div.inline-flex.rounded-full svg {
+  color: #38bdf8 !important;
   font-weight: 800 !important;
 }
 
