@@ -332,15 +332,80 @@ html.light .border-slate-700 {
   border-color: #cbd5e1 !important;
 }
 
-/* Code Editor Light Theme */
+/* --- Code Editor Base & Prism.js High-Contrast Light Theme --- */
+.code-editor textarea,
+.code-editor pre,
+.code-editor code {
+  color: #e2e8f0;
+}
+
 html.light .code-editor {
   background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
 }
 
 html.light .code-editor textarea {
   caret-color: #0284c7 !important;
   color: #0f172a !important;
 }
+
+html.light .code-editor pre,
+html.light .code-editor code {
+  color: #0f172a !important;
+}
+
+/* Light Mode Prism Syntax Highlighting Tokens (GitHub Light Palette) */
+html.light .token.comment,
+html.light .token.prolog,
+html.light .token.doctype,
+html.light .token.cdata {
+  color: #6a737d !important;
+  font-style: italic;
+}
+
+html.light .token.keyword,
+html.light .token.atrule,
+html.light .token.selector-tag {
+  color: #cf222e !important;
+  font-weight: 600;
+}
+
+html.light .token.string,
+html.light .token.char,
+html.light .token.attr-value {
+  color: #0550ae !important;
+}
+
+html.light .token.function,
+html.light .token.class-name {
+  color: #8250df !important;
+  font-weight: 600;
+}
+
+html.light .token.number,
+html.light .token.boolean {
+  color: #057a55 !important;
+}
+
+html.light .token.operator,
+html.light .token.punctuation {
+  color: #24292e !important;
+}
+
+html.light .token.property,
+html.light .token.tag,
+html.light .token.constant {
+  color: #116329 !important;
+}
+
+/* Light Mode Code Editor Line Numbers Gutter */
+html.light div.select-none.border-r {
+  background-color: #f8fafc !important;
+  border-right-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
 
 /* Interactive Code Showcase Light Mode Overrides */
 html.light .text-rose-200 {
