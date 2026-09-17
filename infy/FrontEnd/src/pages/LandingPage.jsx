@@ -30,14 +30,14 @@ export default function LandingPage({ onNavigate }) {
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             {/* Top Pill Badge */}
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/60 dark:border-cyan-400/40 bg-cyan-100/90 dark:bg-cyan-950/80 px-4 py-2 text-xs font-extrabold text-cyan-900 dark:text-cyan-300 shadow-sm dark:shadow-glow">
-              <Sparkles size={14} className="text-cyan-700 dark:text-cyan-400" />
+            <div className="hero-pill-badge-solid mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-extrabold">
+              <Sparkles size={14} />
               <span>Next-Gen AI Multi-Agent Platform</span>
             </div>
 
             {/* H1 Headline */}
-            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl leading-[1.15]">
-              Make Every Line of Code{" "}
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl leading-[1.15]">
+              <span className="text-slate-950 dark:text-white">Make Every Line of Code </span>
               <span className="bg-gradient-to-r from-cyan-700 via-blue-700 to-indigo-800 dark:from-cyan-300 dark:via-blue-400 dark:to-indigo-300 bg-clip-text text-transparent">
                 Safer & Cleaner.
               </span>

@@ -292,16 +292,20 @@ html.light span.bg-gradient-to-r {
   -webkit-background-clip: text !important;
 }
 
-/* Premium High-Contrast Pill Badges for All Themes */
+/* Hero Pill Badge Ultra-High-Contrast Solid Styling */
+.hero-pill-badge-solid,
 html.light div.inline-flex.rounded-full,
 html.dark div.inline-flex.rounded-full,
 html:not(.light) div.inline-flex.rounded-full {
   background-color: #0b1728 !important;
-  border: 1px solid #0284c7 !important;
+  border: 1.5px solid #0284c7 !important;
   color: #38bdf8 !important;
-  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15) !important;
+  box-shadow: 0 4px 20px rgba(2, 132, 199, 0.3) !important;
 }
 
+.hero-pill-badge-solid span,
+.hero-pill-badge-solid p,
+.hero-pill-badge-solid svg,
 html.light div.inline-flex.rounded-full span,
 html.light div.inline-flex.rounded-full p,
 html.light div.inline-flex.rounded-full svg,
@@ -309,6 +313,7 @@ html.dark div.inline-flex.rounded-full span,
 html.dark div.inline-flex.rounded-full p,
 html.dark div.inline-flex.rounded-full svg {
   color: #38bdf8 !important;
+  -webkit-text-fill-color: #38bdf8 !important;
   font-weight: 800 !important;
 }
 
