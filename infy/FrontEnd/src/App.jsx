@@ -207,9 +207,13 @@ export default function App() {
     localStorage.setItem("theme", theme);
     if (theme === "light") {
       document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
       document.body.classList.add("light-mode");
+      document.body.classList.remove("dark-mode");
     } else {
+      document.documentElement.classList.add("dark");
       document.documentElement.classList.remove("light");
+      document.body.classList.add("dark-mode");
       document.body.classList.remove("light-mode");
     }
   }, [theme]);
