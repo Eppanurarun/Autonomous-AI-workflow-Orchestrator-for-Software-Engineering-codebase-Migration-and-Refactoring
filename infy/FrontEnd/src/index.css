@@ -508,10 +508,32 @@ html.light .bg-slate-800\/70 {
   color: #0f172a !important;
 }
 
+/* ResultCard & Inspection Overview Dark Gradients Override in Light Mode */
+html.light .bg-gradient-to-r.from-cyan-950\/40.via-slate-950.to-indigo-950\/40,
+html.light .bg-gradient-to-br.from-slate-900\/95.via-slate-950.to-indigo-950\/90,
+html.light .bg-gradient-to-br.from-indigo-950\/30.via-slate-900\/70.to-slate-950\/80,
+html.light .bg-gradient-to-br.from-cyan-950\/30.via-slate-900\/70.to-slate-950\/80 {
+  background-image: linear-gradient(to bottom right, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.96)) !important;
+  border-color: rgba(203, 213, 225, 0.9) !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05) !important;
+}
+
+html.light .bg-gradient-to-b.from-rose-950\/40.to-slate-950\/80 {
+  background-image: linear-gradient(to bottom, rgba(255, 241, 242, 0.95), rgba(255, 255, 255, 0.95)) !important;
+  border-color: rgba(253, 164, 175, 0.6) !important;
+}
+
+html.light .bg-gradient-to-b.from-emerald-950\/40.to-slate-950\/80 {
+  background-image: linear-gradient(to bottom, rgba(236, 253, 245, 0.95), rgba(255, 255, 255, 0.95)) !important;
+  border-color: rgba(110, 231, 183, 0.6) !important;
+}
+
 /* Light Scrollbars */
 html.light ::-webkit-scrollbar-track { background: #f1f5f9; }
 html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
 
 
 
