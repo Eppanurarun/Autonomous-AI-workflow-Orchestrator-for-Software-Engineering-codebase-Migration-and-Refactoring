@@ -272,9 +272,23 @@ html.light .bg-rose-500\/10 {
   background-color: rgba(190, 18, 60, 0.12) !important;
 }
 
-/* Hero Section Gradient Text in Light Mode */
-html.light .bg-gradient-to-r.from-cyan-300.via-blue-400.to-indigo-400 {
+/* Hero Section Gradient Text & Clip-Text Engine in Light Mode */
+html.light .bg-clip-text,
+html.light .text-transparent {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+}
+
+html.light .bg-gradient-to-r.from-cyan-300.via-blue-400.to-indigo-400,
+html.light .bg-gradient-to-r.from-cyan-300.via-blue-400.to-indigo-500,
+html.light span.bg-gradient-to-r.from-cyan-300 {
   background-image: linear-gradient(to right, #0284c7, #2563eb, #4f46e5) !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
 }
 
 /* Background Overrides for Containers & Sections */
@@ -623,19 +637,32 @@ html.light .bg-emerald-500\/10 {
   color: #065f46 !important;
 }
 
-/* PR Summary Tab & AI Remediation Tab Containers */
+/* All CTA Banners, Footers, and Dark Container Gradients Override in Light Mode */
 html.light .from-indigo-950\/30,
+html.light .from-indigo-950\/50,
+html.light .from-indigo-950\/60,
 html.light .from-cyan-950\/30,
 html.light .from-cyan-950\/40,
+html.light .from-cyan-950\/50,
+html.light .from-cyan-950\/60,
+html.light .to-indigo-950\/60,
+html.light .to-indigo-950\/80,
 html.light .from-slate-900\/95,
 html.light .bg-gradient-to-r.from-cyan-950\/40.via-slate-950.to-indigo-950\/40,
+html.light .bg-gradient-to-r.from-cyan-950\/60.via-slate-950.to-indigo-950\/60,
 html.light .bg-gradient-to-br.from-slate-900\/95.via-slate-950.to-indigo-950\/90,
 html.light .bg-gradient-to-br.from-indigo-950\/30.via-slate-900\/70.to-slate-950\/80,
 html.light .bg-gradient-to-br.from-cyan-950\/30.via-slate-900\/70.to-slate-950\/80 {
-  background-image: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  background-image: linear-gradient(135deg, #e0f2fe 0%, #ffffff 50%, #e0e7ff 100%) !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06) !important;
+  box-shadow: 0 15px 35px -10px rgba(15, 23, 42, 0.08) !important;
+}
+
+html.light .from-cyan-950\/60 h2,
+html.light .from-cyan-950\/60 p,
+html.light .from-cyan-950\/60 span {
+  color: #0f172a !important;
 }
 
 /* Side-by-Side Code Comparison Blocks in AI Remediation */
