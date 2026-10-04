@@ -11,7 +11,9 @@ DEFAULT_FILENAMES = {
     "javascript": "app.js",
     "typescript": "app.ts",
     "cpp": "main.cpp",
+    "c": "main.c",
     "go": "main.go",
+    "julia": "main.jl",
     "html": "index.html",
 }
 
@@ -425,10 +427,15 @@ class SQLiteStorageService:
         }
 
 
-try:
-    from app.services.mongodb_storage_service import MongoDBStorageService
-    storage_service = MongoDBStorageService()
-    print("[INIT] Connected to MongoDB Atlas Cloud Database successfully.")
-except Exception as _err:
-    print(f"[INIT] MongoDB Atlas fallback to SQLite Storage: {_err}")
-    storage_service = SQLiteStorageService()
+# Force SQLite for development stability (MongoDB connection issues)
+print("[INIT] Using SQLite Storage for development stability.")
+storage_service = SQLiteStorageService()
+
+# Uncomment to use MongoDB when connection is stable
+# try:
+#     from app.services.mongodb_storage_service import MongoDBStorageService
+#     storage_service = MongoDBStorageService()
+#     print("[INIT] Connected to MongoDB Atlas Cloud Database successfully.")
+# except Exception as _err:
+#     print(f"[INIT] MongoDB Atlas fallback to SQLite Storage: {_err}")
+#     storage_service = SQLiteStorageService()

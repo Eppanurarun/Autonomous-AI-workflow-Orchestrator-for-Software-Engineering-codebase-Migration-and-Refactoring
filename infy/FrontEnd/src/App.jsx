@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import CodeReview from "./pages/CodeReview";
+import MigrationPage from "./pages/MigrationPage";
 import { deleteAnalysis, getAnalysisHistory } from "./services/api";
 
 function calculateHealthScore(findings) {
@@ -284,6 +285,7 @@ export default function App() {
           onOpenAuth={() => setIsAuthOpen(true)}
         />
       )}
+      {activePage === "migration" && <MigrationPage />}
       {activePage === "admin" && <AdminDashboard />}
 
       <AuthModal

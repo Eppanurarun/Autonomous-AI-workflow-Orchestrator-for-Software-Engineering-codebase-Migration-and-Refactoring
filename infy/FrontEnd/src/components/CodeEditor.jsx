@@ -7,6 +7,7 @@ import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-c";
 import "prismjs/components/prism-cpp";
 import "prismjs/components/prism-go";
+import "prismjs/components/prism-julia";
 import "prismjs/components/prism-markup";
 
 const FILE_NAMES = {
@@ -15,7 +16,9 @@ const FILE_NAMES = {
   javascript: "app.js",
   typescript: "app.ts",
   cpp: "main.cpp",
+  c: "main.c",
   go: "main.go",
+  julia: "main.jl",
   html: "index.html"
 };
 

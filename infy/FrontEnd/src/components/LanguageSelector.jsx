@@ -6,7 +6,9 @@ const LANGUAGES = [
   { value: "javascript", label: "JavaScript", mark: "JS" },
   { value: "typescript", label: "TypeScript", mark: "TS" },
   { value: "cpp", label: "C++", mark: "C++" },
+  { value: "c", label: "C", mark: "C" },
   { value: "go", label: "Go", mark: "Go" },
+  { value: "julia", label: "Julia", mark: "Jl" },
   { value: "html", label: "HTML", mark: "HT" },
 ];
 

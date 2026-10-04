@@ -1,10 +1,11 @@
-import { Home, BarChart3, Clock3, Code2, ShieldCheck, TerminalSquare, ShieldAlert, User, LogIn, LogOut, Sun, Moon } from "lucide-react";
+import { Home, BarChart3, Clock3, Code2, ShieldCheck, TerminalSquare, ShieldAlert, User, LogIn, LogOut, Sun, Moon, ArrowRightLeft } from "lucide-react";
 
 export default function Navbar({ activePage, onNavigate, authUser, onOpenAuth, onLogout, theme, onToggleTheme }) {
   const navItems = [
     { id: "landing", label: "Home", icon: Home },
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
     { id: "analyze", label: "Analyze", icon: Code2 },
+    { id: "migration", label: "Migration", icon: ArrowRightLeft },
     { id: "history", label: "History", icon: Clock3 }
   ];
 

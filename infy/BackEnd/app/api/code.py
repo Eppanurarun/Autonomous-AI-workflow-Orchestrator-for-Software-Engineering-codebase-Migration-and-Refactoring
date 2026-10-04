@@ -19,7 +19,9 @@ DEFAULT_FILENAMES = {
     "javascript": "app.js",
     "typescript": "app.ts",
     "cpp": "main.cpp",
+    "c": "main.c",
     "go": "main.go",
+    "julia": "main.jl",
     "html": "index.html",
 }
 

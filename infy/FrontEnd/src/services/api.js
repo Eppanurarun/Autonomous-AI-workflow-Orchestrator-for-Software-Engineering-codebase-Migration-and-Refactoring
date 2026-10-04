@@ -190,4 +190,95 @@ export function downloadPDFReportUrl(analysisId) {
   return `${API_BASE_URL}/api/report/pdf/${encodeURIComponent(analysisId)}`;
 }
 
+// ============================================================
+// MIGRATION API — Java → Julia Migration Module
+// ============================================================
+
+export async function uploadMigrationFile(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE_URL}/api/migration/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  return parseResponse(response);
+}
+
+export async function runMigrationAnalysis(javaCode, filename) {
+  const response = await fetch(`${API_BASE_URL}/api/migration/analyze`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ java_code: javaCode, filename }),
+  });
+  return parseResponse(response);
+}
+
+export async function runMigrationConvert(javaCode, analysis) {
+  const response = await fetch(`${API_BASE_URL}/api/migration/convert`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ java_code: javaCode, analysis }),
+  });
+  return parseResponse(response);
+}
+
+export async function runMigrationRiskAnalysis(javaCode, juliaCode, analysis) {
+  const response = await fetch(`${API_BASE_URL}/api/migration/risk-analysis`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ java_code: javaCode, julia_code: juliaCode, analysis }),
+  });
+  return parseResponse(response);
+}
+
+export async function runMigrationErrorDetection(juliaCode, javaCode) {
+  const response = await fetch(`${API_BASE_URL}/api/migration/detect-errors`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ julia_code: juliaCode, java_code: javaCode }),
+  });
+  return parseResponse(response);
+}
+
+export async function runMigrationErrorCorrection(javaCode, juliaCode, errors, analysis, risks, iteration) {
+  const response = await fetch(`${API_BASE_URL}/api/migration/correct-errors`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      java_code: javaCode,
+      julia_code: juliaCode,
+      errors,
+      analysis,
+      risks,
+      iteration,
+    }),
+  });
+  return parseResponse(response);
+}
+
+export async function runMigrationValidation(javaCode, juliaCode, analysis, errorsRemaining) {
+  const response = await fetch(`${API_BASE_URL}/api/migration/validate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      java_code: javaCode,
+      julia_code: juliaCode,
+      analysis,
+      errors_remaining: errorsRemaining,
+    }),
+  });
+  return parseResponse(response);
+}
+
+export async function runCompleteMigration(javaCode, filename) {
+  const response = await fetch(`${API_BASE_URL}/api/migration/run`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ java_code: javaCode, filename }),
+  });
+  return parseResponse(response);
+}
+
 export { API_BASE_URL };

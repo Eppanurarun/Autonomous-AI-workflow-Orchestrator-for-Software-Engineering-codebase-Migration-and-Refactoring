@@ -269,6 +269,49 @@ class CodeValidatorService:
         except Exception:
             return self._validate_brackets_and_quotes(code)
 
+    def _validate_julia(self, code: str) -> dict:
+        """
+        Validates Julia syntax using bracket/quote validation.
+        Julia uses end instead of braces, so we check for balanced brackets, quotes, and end blocks.
+        """
+        # Basic bracket and quote validation
+        result = self._validate_brackets_and_quotes(code)
+        if not result["syntax_valid"]:
+            return result
+        
+        # Additional Julia-specific validation: check for balanced 'end' blocks
+        lines = code.splitlines()
+        end_stack = []
+        
+        for idx, line in enumerate(lines):
+            line_num = idx + 1
+            stripped = line.strip()
+            
+            # Count opening blocks (function, if, for, while, try, struct, etc.)
+            if re.search(r'\b(function|if|for|while|try|mutable\s+struct|struct|let|do|begin|quote)\b', stripped):
+                # Check if this line doesn't already end with 'end'
+                if not stripped.endswith('end'):
+                    end_stack.append((line_num, line.strip()))
+            
+            # Count closing 'end' blocks
+            if stripped.startswith('end') or re.search(r'\bend\b\s*(#.*)?$', stripped):
+                if end_stack:
+                    end_stack.pop()
+                else:
+                    return {
+                        "syntax_valid": False,
+                        "errors": [{"line": line_num, "message": "Unexpected 'end' without matching opening block"}]
+                    }
+        
+        if end_stack:
+            start_line, start_line_content = end_stack[0]
+            return {
+                "syntax_valid": False,
+                "errors": [{"line": start_line, "message": f"Unclosed block starting at line {start_line}: missing 'end'"}]
+            }
+        
+        return {"syntax_valid": True, "errors": []}
+
     def _validate_html(self, code: str) -> dict:
         """
         Validates HTML tag structure using Python's HTMLParser and checks for language mismatches.
@@ -322,24 +365,6 @@ class CodeValidatorService:
         except Exception as e:
             return {"syntax_valid": False, "errors": [{"line": 1, "message": f"HTML parser exception: {str(e)}"}]}
 
-    @staticmethod
-    def validate_metadata(code: str, language: str) -> Tuple[bool, str]:
-        """
-        Validates basic metadata: language support, size limits, and non-empty criteria.
-        """
-        if not code or not code.strip():
-            return False, "Code content cannot be empty"
-            
-        if language.lower() not in settings.ALLOWED_LANGUAGES:
-            lang_display = language.capitalize() if language else "This language"
-            return False, f"{lang_display} is currently not supported by CodeGuard AI, but support will be added soon!"
-            
-        if len(code.encode("utf-8")) > settings.MAX_FILE_SIZE_BYTES:
-            limit_mb = settings.MAX_FILE_SIZE_BYTES / (1024 * 1024)
-            return False, f"Code size exceeds the limit of {limit_mb:.1f} MB"
-            
-        return True, ""
-
     @classmethod
     def validate_code(cls, code: str, language: str) -> Dict[str, Any]:
         """
@@ -385,7 +410,7 @@ class CodeValidatorService:
                 }
 
         # 2. Guard against raw HTML pasted into non-HTML languages
-        if lang in ("go", "cpp", "python", "java", "javascript", "typescript") and re.search(r"^\s*<(!DOCTYPE|html|body|div|p|h1|h2|script)", stripped, re.IGNORECASE):
+        if lang in ("go", "cpp", "python", "java", "javascript", "typescript", "julia") and re.search(r"^\s*<(!DOCTYPE|html|body|div|p|h1|h2|script)", stripped, re.IGNORECASE):
             return {
                 "syntax_valid": False,
                 "errors": [
@@ -441,12 +466,30 @@ class CodeValidatorService:
                         "errors": [{"line": 1, "message": f"Language Mismatch: Selected language is TYPESCRIPT, but code contains {desc}."}]
                     }
 
+        # 5. Guard against language construct mismatch for Julia
+        if lang == "julia":
+            mismatches = [
+                (r"^\s*package\s+main", "Go package declaration"),
+                (r"^\s*func\s+main", "Go function definition"),
+                (r"^\s*#include\s*<", "C/C++ include header"),
+                (r"^\s*def\s+\w+\s*\(", "Python function definition"),
+                (r"^\s*public\s+class\s+\w+", "Java class declaration"),
+            ]
+            for pattern, desc in mismatches:
+                if re.search(pattern, stripped, re.MULTILINE):
+                    return {
+                        "syntax_valid": False,
+                        "errors": [{"line": 1, "message": f"Language Mismatch: Selected language is JULIA, but code contains {desc}."}]
+                    }
+
         if lang == "python":
             return cls.validate_python_syntax(code)
         elif lang == "java":
             return cls.validate_java_syntax(code)
         elif lang == "javascript":
             return cls()._validate_js_node(code)
+        elif lang == "julia":
+            return cls()._validate_julia(code)
         elif lang in ("typescript", "cpp", "go"):
             return cls()._validate_brackets_and_quotes(code)
         elif lang == "html":

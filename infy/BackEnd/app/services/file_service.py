@@ -60,8 +60,12 @@ class FileService:
             language = "typescript"
         elif ext_lower in (".cpp", ".cc", ".h"):
             language = "cpp"
+        elif ext_lower == ".c":
+            language = "c"
         elif ext_lower == ".go":
             language = "go"
+        elif ext_lower == ".jl":
+            language = "julia"
         elif ext_lower in (".html", ".htm"):
             language = "html"
         else:

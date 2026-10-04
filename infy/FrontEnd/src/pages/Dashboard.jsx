@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, CheckCircle2, Code2, FileCode2, ShieldAlert, Sparkles, TrendingUp, ExternalLink } from "lucide-react";
+import { ArrowRight, CheckCircle2, Code2, FileCode2, ShieldAlert, Sparkles, TrendingUp, ExternalLink, ArrowRightLeft } from "lucide-react";
 import { getAnalysisHistory } from "../services/api";
 
 function calculateHealthScore(findings) {
@@ -110,6 +110,14 @@ export default function Dashboard({ onNavigate, onSelectAnalysis, authUser, onOp
                 <Code2 size={17} />
                 Start New Analysis
                 <ArrowRight size={16} className="transition group-hover:translate-x-0.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate("migration")}
+                className="group flex items-center justify-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/10 px-5 py-3 text-sm font-extrabold text-purple-300 transition hover:-translate-y-0.5 hover:bg-purple-500/20"
+              >
+                <ArrowRightLeft size={17} />
+                Java → Julia Migration
               </button>
               <button
                 type="button"
